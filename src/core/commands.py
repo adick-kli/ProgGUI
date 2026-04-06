@@ -64,20 +64,32 @@ class CommandBuilder:
         self.interface = interface
         self.programmer = programmer
     
-    def _base_args(self) -> Dict[str, str]:
+    def build(self) -> List[str]:
         """
-        Gibt Standard-Argumente zurück.
+        Erstellt den Befehl als Liste von Strings.
     
-        atprogram erwartet SINGLE-LETTER Flags:
-        -t (tool/programmer)
-        -i (interface) 
-        -d (device)
+        WICHTIG: atprogram erwartet die Flags VOR dem Command!
+    
+        Korrekt:  atprogram -t atmelice -i jtag -d at32uc3a1512 chiperase
+        Falsch:   atprogram chiperase -t atmelice -i jtag -d at32uc3a1512
+    
+        Returns:
+            List[str]: Der vollständige Befehl
         """
-        return {
-            "t": self.programmer,      # atmelice
-            "i": self.interface,       # jtag
-            "d": self.device,          # at32uc3a1512
-        }
+        cmd = [self.base_tool]
+    
+        # ⭐ WICHTIG: Argumente ZUERST (vor dem Command!)
+        for key, value in self.args.items():
+            if value is not None:
+                cmd.extend([f"-{key}", str(value)])
+    
+        # ⭐ DANN der Command
+        cmd.append(self.action)
+    
+        # ⭐ DANN die Flags
+        cmd.extend(self.flags)
+    
+        return cmd
     
     def chiperase(self) -> Command:
         """Befehl: Flash komplett löschen."""
