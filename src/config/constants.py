@@ -4,6 +4,7 @@ Zentrale Konstanten für ProgGUI
 - Farben & Styles
 - Tool-Pfade
 - Device-Konfiguration
+- ...
 """
 
 # ═════════════════════════════════════════════════════════════════════════════
