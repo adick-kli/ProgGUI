@@ -48,7 +48,6 @@ class ProgrammerController:
     def set_progress_callback(self, callback: Callable[[float], None]):
         """Registriert Callback für Progress-Updates."""
         self.on_progress = callback
-        logger.add_callback(self.on_log or (lambda x: None))
     
     def set_status_callback(self, callback: Callable[[str], None]):
         """Registriert Callback für Status-Updates."""

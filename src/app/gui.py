@@ -357,8 +357,26 @@ class ProgGUI(tk.Tk):
         self.log.configure(state="disabled")
     
     def _on_status(self, message: str):
-        """Aktualisiert Status-Text."""
+        """
+        Aktualisiert Status-Text.
+    
+        Prüft auch ob Programmierung fertig ist und aktiviert
+        den Start-Button wieder falls erfolgreich!
+        """
         self.status_var.set(message)
+    
+        # ⭐ Prüfe ob Programmierung erfolgreich war
+        if "erfolgreich" in message.lower():
+            # Button wieder aktivieren nach Success!
+            self.start_btn.configure(state="normal")  # ← START wird GRÜN
+            self.stop_btn.configure(state="disabled")  # ← STOP wird GRAU
+    
+        # ⭐ Prüfe ob Fehler passiert ist
+        elif "fehler" in message.lower() or "error" in message.lower():
+            # Button auch aktivieren bei Fehler (um erneut zu versuchen)
+            self.start_btn.configure(state="normal")
+            self.stop_btn.configure(state="disabled")
+    
         self.update_idletasks()
     
     def _on_progress(self, percent: float):

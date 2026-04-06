@@ -23,32 +23,40 @@ class Command:
     def build(self) -> List[str]:
         """
         Erstellt den Befehl als Liste von Strings.
-        
-        WICHTIG: atprogram erwartet die Flags VOR dem Command!
-        - Single-letter flags: -t, -i, -d, -o, -f
-        - Long flags: --values, --verify, --flash, --eeprom, --fuses, etc.
-        
-        Korrekt:  atprogram -t atmelice -i jtag -d at32uc3a1512 write -o 0x80800000 --values AAFF
-        
+    
+        WICHTIG: atprogram erwartet die GLOBALEN Flags VOR dem Command!
+        Schreib-spezifische Flags kommen NACH dem Command!
+    
+        Korrekt:  atprogram -t atmelice -i jtag -d at32uc3a1512 write -o 0x808001FC --values AAFF
+                  ↑↑↑ Global flags zuerst                          ↑↑↑ Command  ↑↑↑ Write-flags danach
+    
         Returns:
             List[str]: Der vollständige Befehl
         """
         cmd = [self.base_tool]
-        
-        # ⭐ Argumente ZUERST (vor dem Command!)
-        for key, value in self.args.items():
-            if value is not None:
-                # Long flags (mehrere Buchstaben) bekommen --
-                # Single-letter flags (ein Buchstabe) bekommen -
-                prefix = "--" if len(key) > 1 else "-"
-                cmd.extend([f"{prefix}{key}", str(value)])
-        
+    
+        # ⭐ GLOBAL FLAGS ZUERST (vor dem Command!)
+        # Das sind: -t (tool), -i (interface), -d (device)
+        global_keys = {"t", "i", "d"}
+        for key in global_keys:
+            if key in self.args:
+                value = self.args[key]
+                if value is not None:
+                    cmd.extend([f"-{key}", str(value)])
+    
         # ⭐ DANN der Command
         cmd.append(self.action)
-        
+    
+        # ⭐ DANN die Command-spezifischen Argumente (nach dem Command!)
+        # Das sind: -o (offset), --values, -f (file), usw.
+        for key, value in self.args.items():
+            if key not in global_keys and value is not None:
+                prefix = "--" if len(key) > 1 else "-"
+                cmd.extend([f"{prefix}{key}", str(value)])
+    
         # ⭐ DANN die Flags (die haben keine Werte!)
         cmd.extend(self.flags)
-        
+    
         return cmd
     
     def __repr__(self) -> str:
