@@ -156,6 +156,14 @@ class CommandBuilder:
         if verify:
             cmd.flags = ["--verify"]
         return cmd
+
+    def _base_args(self) -> Dict[str, str]:
+        """Gibt Standard-Argumente zurück."""
+        return {
+            "t": self.programmer,
+            "i": self.interface,
+            "d": self.device,
+        }
     
     def secure(self) -> Command:
         """Befehl: Security Bit setzen."""
