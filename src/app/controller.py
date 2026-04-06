@@ -272,7 +272,8 @@ class ProgrammerController:
                     cmd = builder.program_flash(
                         binary_file=bin_file,
                         address="0x80000000",
-                        verify=True
+                        verify=True,
+                        erase=True 
                     )
                     if not self._run_command(cmd, "Flash Program"):
                         return False

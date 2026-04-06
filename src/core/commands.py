@@ -129,14 +129,15 @@ class CommandBuilder:
         return cmd
     
     def program_flash(self, binary_file: str, address: str = "0x80000000",
-                     verify: bool = True) -> Command:
+                     verify: bool = True, erase: bool = True) -> Command:
         """
         Befehl: Flash-Memory programmieren.
-        
+    
         Args:
             binary_file: Pfad zur .bin Datei
             address: Start-Adresse (default: 0x80000000)
             verify: Verifizierung nach dem Schreiben
+            erase: Flash vor dem Schreiben löschen
         """
         cmd = Command(self.atprogram_path, "program")
         cmd.args = {
@@ -144,8 +145,13 @@ class CommandBuilder:
             "o": address,
             "f": binary_file,
         }
+    
+        cmd.flags = []
+        if erase:
+            cmd.flags.append("-e")
         if verify:
-            cmd.flags = ["--verify"]
+            cmd.flags.append("--verify")
+    
         return cmd
 
     def _base_args(self) -> Dict[str, str]:
