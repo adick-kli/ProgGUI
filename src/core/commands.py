@@ -24,19 +24,29 @@ class Command:
         """
         Erstellt den Befehl als Liste von Strings.
     
-        atprogram erwartet: -t (nicht --t), -i (nicht --i), etc.
+        WICHTIG: atprogram erwartet die Flags VOR dem Command!
+        - Single-letter flags: -t, -i, -d, -o, -f
+        - Long flags: --values, --verify, --flash, --eeprom, --fuses, etc.
+    
+        Korrekt:  atprogram -t atmelice -i jtag -d at32uc3a1512 write -o 0x80800000 --values AAFF
     
         Returns:
             List[str]: Der vollständige Befehl
         """
-        cmd = [self.base_tool, self.action]
+        cmd = [self.base_tool]
     
-        # Argumente hinzufügen (-key value, nicht --key!)
+        # ⭐ Argumente ZUERST (vor dem Command!)
         for key, value in self.args.items():
             if value is not None:
-                cmd.extend([f"-{key}", str(value)])  # ← WICHTIG: Nur EIN Minus!
+                # Long flags (mehrere Buchstaben) bekommen --
+                # Single-letter flags (ein Buchstabe) bekommen -
+                prefix = "--" if len(key) > 1 else "-"
+                cmd.extend([f"{prefix}{key}", str(value)])
     
-        # Flags hinzufügen (ohne Wert)
+        # ⭐ DANN der Command
+        cmd.append(self.action)
+    
+        # ⭐ DANN die Flags (die haben keine Werte!)
         cmd.extend(self.flags)
     
         return cmd
@@ -64,32 +74,7 @@ class CommandBuilder:
         self.interface = interface
         self.programmer = programmer
     
-    def build(self) -> List[str]:
-        """
-        Erstellt den Befehl als Liste von Strings.
-    
-        WICHTIG: atprogram erwartet die Flags VOR dem Command!
-    
-        Korrekt:  atprogram -t atmelice -i jtag -d at32uc3a1512 chiperase
-        Falsch:   atprogram chiperase -t atmelice -i jtag -d at32uc3a1512
-    
-        Returns:
-            List[str]: Der vollständige Befehl
-        """
-        cmd = [self.base_tool]
-    
-        # ⭐ WICHTIG: Argumente ZUERST (vor dem Command!)
-        for key, value in self.args.items():
-            if value is not None:
-                cmd.extend([f"-{key}", str(value)])
-    
-        # ⭐ DANN der Command
-        cmd.append(self.action)
-    
-        # ⭐ DANN die Flags
-        cmd.extend(self.flags)
-    
-        return cmd
+
     
     def chiperase(self) -> Command:
         """Befehl: Flash komplett löschen."""
