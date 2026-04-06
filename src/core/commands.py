@@ -65,11 +65,18 @@ class CommandBuilder:
         self.programmer = programmer
     
     def _base_args(self) -> Dict[str, str]:
-        """Gibt Standard-Argumente zurück."""
+        """
+        Gibt Standard-Argumente zurück.
+    
+        atprogram erwartet SINGLE-LETTER Flags:
+        -t (tool/programmer)
+        -i (interface) 
+        -d (device)
+        """
         return {
-            "tool": self.programmer,      # ← geändert: "t" → "tool"
-            "interface": self.interface,  # ← geändert: "i" → "interface"
-            "device": self.device,        # ← geändert: "d" → "device"
+            "t": self.programmer,      # atmelice
+            "i": self.interface,       # jtag
+            "d": self.device,          # at32uc3a1512
         }
     
     def chiperase(self) -> Command:
