@@ -24,21 +24,23 @@ class Command:
         """
         Erstellt den Befehl als Liste von Strings.
     
-        WICHTIG: atprogram erwartet die GLOBALEN Flags VOR dem Command!
-        Schreib-spezifische Flags kommen NACH dem Command!
+        WICHTIG: atprogram erwartet die Flags in DIESER Reihenfolge:
+        1. Base tool
+        2. GLOBAL FLAGS in dieser Reihenfolge: -t, -i, -d
+        3. Command (chiperase, write, program, etc.)
+        4. Command-spezifische Flags/Args
     
-        Korrekt:  atprogram -t atmelice -i jtag -d at32uc3a1512 write -o 0x808001FC --values AAFF
-                  ↑↑↑ Global flags zuerst                          ↑↑↑ Command  ↑↑↑ Write-flags danach
+        Korrekt:  atprogram -t atmelice -i jtag -d at32uc3a1512 chiperase
     
         Returns:
             List[str]: Der vollständige Befehl
         """
         cmd = [self.base_tool]
     
-        # ⭐ GLOBAL FLAGS ZUERST (vor dem Command!)
-        # Das sind: -t (tool), -i (interface), -d (device)
-        global_keys = {"t", "i", "d"}
-        for key in global_keys:
+        # ⭐ GLOBAL FLAGS in FESTER REIHENFOLGE (vor dem Command!)
+        # Die Reihenfolge MUSS so sein: -t, -i, -d
+        global_order = ["t", "i", "d"]
+        for key in global_order:
             if key in self.args:
                 value = self.args[key]
                 if value is not None:
@@ -48,9 +50,8 @@ class Command:
         cmd.append(self.action)
     
         # ⭐ DANN die Command-spezifischen Argumente (nach dem Command!)
-        # Das sind: -o (offset), --values, -f (file), usw.
         for key, value in self.args.items():
-            if key not in global_keys and value is not None:
+            if key not in global_order and value is not None:
                 prefix = "--" if len(key) > 1 else "-"
                 cmd.extend([f"{prefix}{key}", str(value)])
     
