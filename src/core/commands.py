@@ -23,18 +23,18 @@ class Command:
     def build(self) -> List[str]:
         """
         Erstellt den Befehl als Liste von Strings.
-    
+        
         WICHTIG: atprogram erwartet die Flags VOR dem Command!
         - Single-letter flags: -t, -i, -d, -o, -f
         - Long flags: --values, --verify, --flash, --eeprom, --fuses, etc.
-    
+        
         Korrekt:  atprogram -t atmelice -i jtag -d at32uc3a1512 write -o 0x80800000 --values AAFF
-    
+        
         Returns:
             List[str]: Der vollständige Befehl
         """
         cmd = [self.base_tool]
-    
+        
         # ⭐ Argumente ZUERST (vor dem Command!)
         for key, value in self.args.items():
             if value is not None:
@@ -42,13 +42,13 @@ class Command:
                 # Single-letter flags (ein Buchstabe) bekommen -
                 prefix = "--" if len(key) > 1 else "-"
                 cmd.extend([f"{prefix}{key}", str(value)])
-    
+        
         # ⭐ DANN der Command
         cmd.append(self.action)
-    
+        
         # ⭐ DANN die Flags (die haben keine Werte!)
         cmd.extend(self.flags)
-    
+        
         return cmd
     
     def __repr__(self) -> str:
@@ -73,8 +73,6 @@ class CommandBuilder:
         self.device = device
         self.interface = interface
         self.programmer = programmer
-    
-
     
     def chiperase(self) -> Command:
         """Befehl: Flash komplett löschen."""
