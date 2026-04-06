@@ -1,4 +1,4 @@
-# Constants for Colors
+﻿# Constants for Colors
 
 # Define color constants
 PRIMARY_COLOR = '#3498db'
