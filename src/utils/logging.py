@@ -1,4 +1,5 @@
-﻿# src/utils/logging.py
+﻿# -*- coding: utf-8 -*-
+# src/utils/logging.py
 """
 Logging-System für ProgGUI
 - Strukturierte Logs mit Tags

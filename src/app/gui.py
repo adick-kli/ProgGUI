@@ -1,4 +1,5 @@
-﻿# src/app/gui.py
+﻿# -*- coding: utf-8 -*-
+# src/app/gui.py
 """
 Tkinter GUI für ProgGUI
 - Reine Präsentationslogik
@@ -31,18 +32,20 @@ class ProgGUI(tk.Tk):
         self.configure(bg=BG)
         self.resizable(True, True)
         self.minsize(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
-        
+    
         # Controller
         self.controller = ProgrammerController()
+    
+        # ⭐ WICHTIG: Variablen ZUERST initialisieren (vor _build_ui!)
+        self._init_variables()
+    
+        # Callbacks registrieren
         self.controller.set_log_callback(self._on_log)
         self.controller.set_status_callback(self._on_status)
         self.controller.set_progress_callback(self._on_progress)
-        
-        # UI bauen
+    
+        # DANN UI bauen
         self._build_ui()
-        
-        # Tkinter-Variablen initialisieren
-        self._init_variables()
     
     def _init_variables(self):
         """Initialisiert alle Tkinter-Variablen."""

@@ -1,6 +1,7 @@
+ï»¿# -*- coding: utf-8 -*-
 # src/core/commands.py
 """
-Command Builder für atprogram Befehle
+Command Builder fÃ¼r atprogram Befehle
 - Erstellt sichere, validierte Befehle
 - Verhindert Command Injection
 - Lesbar und wartbar
@@ -12,7 +13,7 @@ from dataclasses import dataclass, field
 
 @dataclass
 class Command:
-    """Repräsentiert einen atprogram-Befehl."""
+    """ReprÃ¤sentiert einen atprogram-Befehl."""
     
     base_tool: str  # z.B. "atprogram.exe"
     action: str     # z.B. "chiperase", "write", "program"
@@ -24,16 +25,16 @@ class Command:
         Erstellt den Befehl als Liste von Strings.
         
         Returns:
-            List[str]: Der vollständige Befehl
+            List[str]: Der vollstÃ¤ndige Befehl
         """
         cmd = [self.base_tool, self.action]
         
-        # Argumente hinzufügen (--key value)
+        # Argumente hinzufÃ¼gen (--key value)
         for key, value in self.args.items():
             if value is not None:
                 cmd.extend([f"--{key}", str(value)])
         
-        # Flags hinzufügen (ohne Wert)
+        # Flags hinzufÃ¼gen (ohne Wert)
         cmd.extend(self.flags)
         
         return cmd
@@ -43,7 +44,7 @@ class Command:
 
 
 class CommandBuilder:
-    """Builder für atprogram-Befehle mit Device-Parametern."""
+    """Builder fÃ¼r atprogram-Befehle mit Device-Parametern."""
     
     def __init__(self, atprogram_path: str, device: str, 
                  interface: str, programmer: str):
@@ -62,7 +63,7 @@ class CommandBuilder:
         self.programmer = programmer
     
     def _base_args(self) -> Dict[str, str]:
-        """Gibt Standard-Argumente zurück."""
+        """Gibt Standard-Argumente zurÃ¼ck."""
         return {
             "t": self.programmer,
             "i": self.interface,
@@ -70,13 +71,13 @@ class CommandBuilder:
         }
     
     def chiperase(self) -> Command:
-        """Befehl: Flash komplett löschen."""
+        """Befehl: Flash komplett lÃ¶schen."""
         cmd = Command(self.atprogram_path, "chiperase")
         cmd.args = self._base_args()
         return cmd
     
     def erase_user_page(self) -> Command:
-        """Befehl: User Page löschen."""
+        """Befehl: User Page lÃ¶schen."""
         cmd = Command(self.atprogram_path, "erase")
         cmd.args = self._base_args()
         cmd.flags = ["-up"]  # User Page Flag
@@ -103,7 +104,7 @@ class CommandBuilder:
         Befehl: Fuse Bits schreiben.
         
         Args:
-            address: Offset (üblicherweise "0x0")
+            address: Offset (Ã¼blicherweise "0x0")
             values: Hex-Werte
         """
         cmd = Command(self.atprogram_path, "write")

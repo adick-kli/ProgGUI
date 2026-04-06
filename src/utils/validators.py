@@ -1,6 +1,7 @@
+ï»¿# -*- coding: utf-8 -*-
 # src/utils/validators.py
 """
-Input-Validierung für ProgGUI
+Input-Validierung fÃ¼r ProgGUI
 - Validiert Hex-Werte
 - Validiert Dateipfade
 - Validiert Tool-Pfade
@@ -12,7 +13,7 @@ from typing import Tuple, Optional
 
 
 class ValidationError(Exception):
-    """Exception für Validierungs-Fehler."""
+    """Exception fÃ¼r Validierungs-Fehler."""
     pass
 
 
@@ -22,34 +23,34 @@ class Validator:
     @staticmethod
     def is_valid_hex(value: str, expected_length: Optional[int] = None) -> bool:
         """
-        Prüft ob ein String ein gültiger Hex-Wert ist.
+        PrÃ¼ft ob ein String ein gÃ¼ltiger Hex-Wert ist.
         
         Args:
-            value: Zu prüfender String (z.B. "E11EFFD7")
-            expected_length: Optional gewünschte Länge
+            value: Zu prÃ¼fender String (z.B. "E11EFFD7")
+            expected_length: Optional gewÃ¼nschte LÃ¤nge
         
         Returns:
-            bool: True wenn gültig
+            bool: True wenn gÃ¼ltig
         
         Raises:
-            ValidationError: Bei ungültigen Werten
+            ValidationError: Bei ungÃ¼ltigen Werten
         """
         if not value:
             raise ValidationError("Hex-Wert darf nicht leer sein")
         
-        # Entferne führendes "0x" falls vorhanden
+        # Entferne fÃ¼hrendes "0x" falls vorhanden
         clean_value = value.replace("0x", "").replace("0X", "")
         
-        # Prüfe ob nur Hex-Zeichen
+        # PrÃ¼fe ob nur Hex-Zeichen
         try:
             int(clean_value, 16)
         except ValueError:
             raise ValidationError(
-                f"'{value}' ist kein gültiger Hex-Wert. "
+                f"'{value}' ist kein gÃ¼ltiger Hex-Wert. "
                 f"Verwende nur 0-9 und A-F"
             )
         
-        # Prüfe Länge wenn gewünscht
+        # PrÃ¼fe LÃ¤nge wenn gewÃ¼nscht
         if expected_length and len(clean_value) != expected_length:
             raise ValidationError(
                 f"Hex-Wert muss {expected_length} Zeichen lang sein, "
@@ -70,7 +71,7 @@ class Validator:
             str: Normalisierte Adresse mit "0x" Prefix
         
         Raises:
-            ValidationError: Bei ungültiger Adresse
+            ValidationError: Bei ungÃ¼ltiger Adresse
         """
         if not address:
             raise ValidationError("Adresse darf nicht leer sein")
@@ -78,7 +79,7 @@ class Validator:
         # Entferne Spaces
         address = address.strip()
         
-        # Prüfe ob Hex gültig
+        # PrÃ¼fe ob Hex gÃ¼ltig
         Validator.is_valid_hex(address)
         
         # Normalisiere zu "0x..." Format
@@ -93,14 +94,14 @@ class Validator:
         Validiert einen Dateipfad.
         
         Args:
-            file_path: Zu prüfender Pfad
+            file_path: Zu prÃ¼fender Pfad
             must_exist: Muss die Datei existieren?
         
         Returns:
-            bool: True wenn gültig
+            bool: True wenn gÃ¼ltig
         
         Raises:
-            ValidationError: Bei ungültiger Datei
+            ValidationError: Bei ungÃ¼ltiger Datei
         """
         if not file_path:
             raise ValidationError("Dateipfad darf nicht leer sein")
@@ -124,10 +125,10 @@ class Validator:
             file_path: Pfad zur .hex Datei
         
         Returns:
-            bool: True wenn gültig
+            bool: True wenn gÃ¼ltig
         
         Raises:
-            ValidationError: Bei ungültiger Datei
+            ValidationError: Bei ungÃ¼ltiger Datei
         """
         Validator.is_valid_file(file_path, must_exist=True)
         
@@ -136,7 +137,7 @@ class Validator:
                 f"Datei muss .hex Endung haben, ist aber: {file_path}"
             )
         
-        # Optional: Prüfe ob Datei Hex-Inhalt hat
+        # Optional: PrÃ¼fe ob Datei Hex-Inhalt hat
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 first_line = f.readline().strip()
@@ -157,13 +158,13 @@ class Validator:
         
         Args:
             tool_path: Pfad zum Tool
-            tool_name: Name des Tools (für Error-Message)
+            tool_name: Name des Tools (fÃ¼r Error-Message)
         
         Returns:
-            bool: True wenn gültig
+            bool: True wenn gÃ¼ltig
         
         Raises:
-            ValidationError: Bei ungültiger Pfad
+            ValidationError: Bei ungÃ¼ltiger Pfad
         """
         Validator.is_valid_file(tool_path, must_exist=True)
         
@@ -186,7 +187,7 @@ class Validator:
         """
         errors = []
         
-        # Tool-Pfade prüfen
+        # Tool-Pfade prÃ¼fen
         tools = {
             "atprogram_path": "atprogram.exe",
             "atbackend_path": "atbackend.exe",
@@ -203,14 +204,14 @@ class Validator:
                 except ValidationError as e:
                     errors.append(str(e))
         
-        # HEX-Datei prüfen (nur wenn gesetzt)
+        # HEX-Datei prÃ¼fen (nur wenn gesetzt)
         if settings_dict.get("hex_file"):
             try:
                 Validator.is_valid_hex_file(settings_dict["hex_file"])
             except ValidationError as e:
                 errors.append(str(e))
         
-        # Hex-Werte prüfen
+        # Hex-Werte prÃ¼fen
         hex_values = ["val_1fc", "val_1f8", "fuse_val"]
         for key in hex_values:
             if key in settings_dict:

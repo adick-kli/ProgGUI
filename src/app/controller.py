@@ -1,4 +1,5 @@
-﻿# src/app/controller.py
+﻿# -*- coding: utf-8 -*-
+# src/app/controller.py
 """
 Application Controller - Herzstück der Programmier-Logik
 - Koordiniert alle Schritte

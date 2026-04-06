@@ -1,0 +1,11 @@
+# requirements.txt
+# Dependencies für ProgGUI
+
+# GUI
+# (tkinter ist bereits in Python enthalten)
+
+# Für PyInstaller (um .exe zu erstellen)
+pyinstaller>=6.0.0
+
+# Optional: für bessere Fehlerbehandlung
+colorama>=0.4.6

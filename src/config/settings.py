@@ -1,4 +1,5 @@
-﻿# src/config/settings.py
+﻿# -*- coding: utf-8 -*-
+# src/config/settings.py
 """
 Settings Management für ProgGUI
 - Lädt/speichert Einstellungen von/zu settings.json

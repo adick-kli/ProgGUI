@@ -1,10 +1,10 @@
-﻿# src/config/constants.py
+﻿# -*- coding: utf-8 -*-
+# src/config/constants.py
 """
 Zentrale Konstanten für ProgGUI
 - Farben & Styles
 - Tool-Pfade
 - Device-Konfiguration
-- ...
 """
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -22,9 +22,9 @@ YELLOW      = "#f9e2af"     # Gelb (Warning)
 TEXT        = "#cdd6f4"     # Normaltext
 SUBTEXT     = "#a6adc8"     # Subtext (gedimmt)
 
-# ════════════════════════════════���════════════════════════════════════════════
-# 🔤 SCHRIFTARTEN
 # ═════════════════════════════════════════════════════════════════════════════
+# 🔤 SCHRIFTARTEN
+# ══════════���══════════════════════════════════════════════════════════════════
 
 FONT_MAIN   = ("Consolas", 10)
 FONT_TITLE  = ("Consolas", 13, "bold")
@@ -41,7 +41,7 @@ DEFAULT_OBJCOPY   = r"C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr32\av
 
 # ═════════════════════════════════════════════════════════════════════════════
 # 🎯 DEVICE-KONFIGURATION
-# ════════════��════════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════════════════════════
 
 DEVICE      = "at32uc3a1512"  # Prozessor-Typ
 INTERFACE   = "jtag"          # Debug-Interface
@@ -86,3 +86,19 @@ PROGRAMMING_STEPS = [
 
 MIN_WINDOW_WIDTH = 860
 MIN_WINDOW_HEIGHT = 680
+DEFAULT_WINDOW_WIDTH = 1000
+DEFAULT_WINDOW_HEIGHT = 750
+
+# ═════════════════════════════════════════════════════════════════════════════
+# 🔍 LOGGING-TAGS & FARBEN
+# ═════════════════════════════════════════════════════════════════════════════
+
+LOG_TAGS = {
+    "ok": {"color": GREEN, "icon": "✅"},
+    "err": {"color": RED, "icon": "❌"},
+    "warn": {"color": YELLOW, "icon": "⚠"},
+    "head": {"color": ACCENT, "icon": "═"},
+    "sub": {"color": ACCENT2, "icon": "▶"},
+    "normal": {"color": TEXT, "icon": " "},
+    "dim": {"color": SUBTEXT, "icon": " "},
+}

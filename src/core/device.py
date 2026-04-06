@@ -1,6 +1,7 @@
+﻿# -*- coding: utf-8 -*-
 # src/core/device.py
 """
-Device-Konfiguration f�r AT32UC3A1512
+Device-Konfiguration für AT32UC3A1512
 - Device-Informationen
 - Memory-Layout
 - Programmier-Parameter
