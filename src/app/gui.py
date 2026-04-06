@@ -36,10 +36,10 @@ class ProgGUI(tk.Tk):
         # Controller
         self.controller = ProgrammerController()
     
-        # ⭐ WICHTIG: Variablen ZUERST initialisieren (vor _build_ui!)
+        # ⭐ Variablen ZUERST initialisieren
         self._init_variables()
     
-        # Callbacks registrieren
+        # ⭐ Callbacks NUR EINMAL registrieren - HIER, nicht später!
         self.controller.set_log_callback(self._on_log)
         self.controller.set_status_callback(self._on_status)
         self.controller.set_progress_callback(self._on_progress)

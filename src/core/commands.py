@@ -23,20 +23,22 @@ class Command:
     def build(self) -> List[str]:
         """
         Erstellt den Befehl als Liste von Strings.
-        
+    
+        atprogram erwartet: -t (nicht --t), -i (nicht --i), etc.
+    
         Returns:
             List[str]: Der vollständige Befehl
         """
         cmd = [self.base_tool, self.action]
-        
-        # Argumente hinzufügen (--key value)
+    
+        # Argumente hinzufügen (-key value, nicht --key!)
         for key, value in self.args.items():
             if value is not None:
-                cmd.extend([f"--{key}", str(value)])
-        
+                cmd.extend([f"-{key}", str(value)])  # ← WICHTIG: Nur EIN Minus!
+    
         # Flags hinzufügen (ohne Wert)
         cmd.extend(self.flags)
-        
+    
         return cmd
     
     def __repr__(self) -> str:
@@ -65,9 +67,9 @@ class CommandBuilder:
     def _base_args(self) -> Dict[str, str]:
         """Gibt Standard-Argumente zurück."""
         return {
-            "t": self.programmer,
-            "i": self.interface,
-            "d": self.device,
+            "tool": self.programmer,      # ← geändert: "t" → "tool"
+            "interface": self.interface,  # ← geändert: "i" → "interface"
+            "device": self.device,        # ← geändert: "d" → "device"
         }
     
     def chiperase(self) -> Command:
