@@ -21,7 +21,7 @@ class GeneralTab(tk.Frame):
         super().__init__(parent, bg=theme_manager.get_color("surface"))
         self.parent = parent
         theme_manager.add_theme_listener(self._on_theme_changed)
-        language_manager.add_theme_listener(self._on_language_changed)
+        language_manager.add_language_listener(self._on_language_changed)
         self._create_widgets()
         self._load_settings()
     
