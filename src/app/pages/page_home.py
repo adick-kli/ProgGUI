@@ -81,7 +81,7 @@ class PageHome(tk.Frame):
             relief=tk.RAISED,
             bd=1
         )
-        welcome_frame.pack(fill=tk.X, pady=(0, 20))
+        welcome_frame.pack(fill=tk.X, pady=(10, 20))
         
         welcome_label = tk.Label(
             welcome_frame,
@@ -117,7 +117,7 @@ class PageHome(tk.Frame):
             pady=15,
             font=("Arial", 11, "bold")
         )
-        actions_frame.pack(fill=tk.X, pady=(0, 20))
+        actions_frame.pack(fill=tk.X, pady=(10, 20))
         
         actions_button_frame = tk.Frame(actions_frame, bg=theme_manager.get_color("surface"))
         actions_button_frame.pack(fill=tk.X)
@@ -164,7 +164,7 @@ class PageHome(tk.Frame):
             pady=15,
             font=("Arial", 11, "bold")
         )
-        status_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 20))
+        status_frame.pack(fill=tk.BOTH, expand=True, pady=(10, 20))
         
         # Status Items
         status_items = [
@@ -182,7 +182,7 @@ class PageHome(tk.Frame):
         # VERSION & ABOUT
         # ─────────────────────────────────────────────────────
         about_frame = tk.Frame(main_frame, bg=theme_manager.get_color("background"))
-        about_frame.pack(fill=tk.X)
+        about_frame.pack(fill=tk.X, pady=(10, 0))  # ← PADDING HINZUFÜGEN
         
         version_label = tk.Label(
             about_frame,

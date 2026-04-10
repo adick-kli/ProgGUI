@@ -64,7 +64,7 @@ class GeneralTab(tk.Frame):
             pady=15,
             font=("Arial", 10, "bold")
         )
-        language_frame.pack(fill=tk.X, pady=(0, 20))
+        language_frame.pack(fill=tk.X, pady=(10, 20))
         
         # Label
         tk.Label(
@@ -120,7 +120,7 @@ class GeneralTab(tk.Frame):
             pady=15,
             font=("Arial", 10, "bold")
         )
-        options_frame.pack(fill=tk.X, pady=(0, 20))
+        options_frame.pack(fill=tk.X, pady=(10, 20))
         
         # Auto-save
         self.autosave_var = tk.BooleanVar(value=True)
@@ -234,7 +234,7 @@ class AppearanceTab(tk.Frame):
             pady=15,
             font=("Arial", 10, "bold")
         )
-        theme_frame.pack(fill=tk.X, pady=(0, 20))
+        theme_frame.pack(fill=tk.X, pady=(10, 20))
         
         tk.Label(
             theme_frame,
@@ -283,7 +283,7 @@ class AppearanceTab(tk.Frame):
             pady=15,
             font=("Arial", 10, "bold")
         )
-        preview_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 20))
+        preview_frame.pack(fill=tk.BOTH, expand=True, pady=(10, 20))
         
         # Farben anzeigen
         colors_to_show = [
