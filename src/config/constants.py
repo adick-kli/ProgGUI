@@ -1,5 +1,24 @@
 ﻿# -*- coding: utf-8 -*-
 # src/config/constants.py
+
+# ═══════════════════════════════════════════════════════════
+# THEME & LANGUAGE MANAGER (neu)
+# ═══════════════════════════════════════════════════════════
+
+from .styles_config import theme_manager, ThemeName, ColorPalette, ThemeConfig
+from .language_config import language_manager, Language, LanguageStrings, LanguageConfig
+
+__all__ = [
+    'theme_manager',
+    'language_manager',
+    'ThemeName',
+    'Language',
+    'ColorPalette',
+    'LanguageStrings',
+    'ThemeConfig',
+    'LanguageConfig',
+]
+
 """
 Zentrale Konstanten für ProgGUI
 - Farben & Styles
