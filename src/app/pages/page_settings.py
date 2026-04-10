@@ -13,24 +13,6 @@ from tkinter import ttk, messagebox
 
 from ...config.constants import theme_manager, language_manager, ThemeName, Language
 
-class PageSettings(tk.Frame):
-    """Settings / Einstellungen Seite."""
-    
-    def __init__(self, parent):
-        super().__init__(parent, bg=theme_manager.get_color("background"))
-        
-        self.theme_callback = self._on_theme_changed
-        self._create_widgets()
-        theme_manager.add_theme_listener(self.theme_callback)
-    
-    def destroy(self):
-        """Entfernt Listener bevor Widget zerstört wird."""
-        try:
-            if self.theme_callback in theme_manager._callbacks:
-                theme_manager._callbacks.remove(self.theme_callback)
-        except:
-            pass
-        super().destroy()
 
 class GeneralTab(tk.Frame):
     """TAB 1: Allgemeine Einstellungen."""
@@ -38,8 +20,6 @@ class GeneralTab(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent, bg=theme_manager.get_color("surface"))
         self.parent = parent
-        theme_manager.add_theme_listener(self._on_theme_changed)
-        language_manager.add_language_listener(self._on_language_changed)
         self._create_widgets()
         self._load_settings()
     
@@ -146,12 +126,6 @@ class GeneralTab(tk.Frame):
             new_language = self.language_map[selected]
             language_manager.set_language(new_language)
             messagebox.showinfo("Language Changed", f"Language changed to {selected}.")
-    
-    def _on_theme_changed(self, new_theme):
-        pass
-    
-    def _on_language_changed(self, new_language):
-        pass
 
 
 class AppearanceTab(tk.Frame):
@@ -161,7 +135,6 @@ class AppearanceTab(tk.Frame):
         super().__init__(parent, bg=theme_manager.get_color("surface"))
         self.parent = parent
         self.theme_buttons = {}
-        theme_manager.add_theme_listener(self._on_theme_changed)
         self._create_widgets()
         self._load_settings()
     
@@ -277,12 +250,6 @@ class AppearanceTab(tk.Frame):
             if theme_name.value == selected:
                 theme_manager.set_theme(theme_name)
                 break
-    
-    def _on_theme_changed(self, new_theme):
-        for widget in self.winfo_children():
-            widget.destroy()
-        self._create_widgets()
-        self._load_settings()
 
 
 class ToolsTab(tk.Frame):
@@ -347,7 +314,6 @@ class PageSettings(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent, bg=theme_manager.get_color("background"))
         self._create_widgets()
-        theme_manager.add_theme_listener(self._on_theme_changed)
     
     def _create_widgets(self):
         header = tk.Label(
@@ -405,6 +371,3 @@ class PageSettings(tk.Frame):
     
     def _close(self):
         self.destroy()
-    
-    def _on_theme_changed(self, new_theme):
-        self.configure(bg=theme_manager.get_color("background"))
