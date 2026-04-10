@@ -13,6 +13,24 @@ from tkinter import ttk, messagebox
 
 from ...config.constants import theme_manager, language_manager, ThemeName, Language
 
+class PageSettings(tk.Frame):
+    """Settings / Einstellungen Seite."""
+    
+    def __init__(self, parent):
+        super().__init__(parent, bg=theme_manager.get_color("background"))
+        
+        self.theme_callback = self._on_theme_changed
+        self._create_widgets()
+        theme_manager.add_theme_listener(self.theme_callback)
+    
+    def destroy(self):
+        """Entfernt Listener bevor Widget zerstört wird."""
+        try:
+            if self.theme_callback in theme_manager._callbacks:
+                theme_manager._callbacks.remove(self.theme_callback)
+        except:
+            pass
+        super().destroy()
 
 class GeneralTab(tk.Frame):
     """TAB 1: Allgemeine Einstellungen."""

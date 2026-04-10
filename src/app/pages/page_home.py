@@ -5,8 +5,6 @@ Home / Startseite von ProgGUI
 - Welcome Banner
 - Quick Actions
 - System Status
-- Theme-dynamisch
-- Sprach-dynamisch
 """
 
 import tkinter as tk
@@ -24,9 +22,30 @@ class PageHome(tk.Frame):
             bg=theme_manager.get_color("background")
         )
         
-        theme_manager.add_theme_listener(self._on_theme_changed)
-        language_manager.add_language_listener(self._on_language_changed)
+        self.theme_callback = self._on_theme_changed
+        self.language_callback = self._on_language_changed
+        
+        theme_manager.add_theme_listener(self.theme_callback)
+        language_manager.add_language_listener(self.language_callback)
+        
         self._create_widgets()
+    
+    def destroy(self):
+        """Entfernt Listener bevor Widget zerstört wird."""
+        try:
+            # Listener entfernen (aus der Liste)
+            if self.theme_callback in theme_manager._callbacks:
+                theme_manager._callbacks.remove(self.theme_callback)
+        except:
+            pass
+        
+        try:
+            if self.language_callback in language_manager._callbacks:
+                language_manager._callbacks.remove(self.language_callback)
+        except:
+            pass
+        
+        super().destroy()
     
     def _create_widgets(self):
         """Erstellt alle Widgets für die Home-Seite."""
@@ -221,11 +240,21 @@ class PageHome(tk.Frame):
         value_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
     
     def _on_theme_changed(self, new_theme):
-        for widget in self.winfo_children():
-            widget.destroy()
-        self._create_widgets()
+        """Wird aufgerufen wenn Theme wechselt."""
+        try:
+            if self.winfo_exists():
+                for widget in self.winfo_children():
+                    widget.destroy()
+                self._create_widgets()
+        except:
+            pass
     
     def _on_language_changed(self, new_language):
-        for widget in self.winfo_children():
-            widget.destroy()
-        self._create_widgets()
+        """Wird aufgerufen wenn Sprache wechselt."""
+        try:
+            if self.winfo_exists():
+                for widget in self.winfo_children():
+                    widget.destroy()
+                self._create_widgets()
+        except:
+            pass
