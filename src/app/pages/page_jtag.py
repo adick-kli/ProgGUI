@@ -6,6 +6,7 @@ JTAG Programmer Seite
 - Firmware-Datei auswählen
 - Programmierung starten/stoppen
 - Progress-Bar + Logs
+- VOLLSTÄNDIG SCROLLBAR!
 """
 
 import tkinter as tk
@@ -16,8 +17,50 @@ import time
 from ...config.constants import theme_manager
 
 
+class ScrollableFrame(tk.Frame):
+    """Frame mit automatischem Scrollbar."""
+    
+    def __init__(self, parent, **kwargs):
+        super().__init__(parent, **kwargs)
+        
+        # Canvas + Scrollbar
+        self.canvas = tk.Canvas(
+            self,
+            bg=theme_manager.get_color("background"),
+            highlightthickness=0
+        )
+        scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        self.scrollable_frame = tk.Frame(
+            self.canvas,
+            bg=theme_manager.get_color("background")
+        )
+        
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        )
+        
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=scrollbar.set)
+        
+        # Mouse wheel scrolling
+        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+        self.canvas.bind_all("<Button-4>", self._on_mousewheel)
+        self.canvas.bind_all("<Button-5>", self._on_mousewheel)
+        
+        self.canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+    
+    def _on_mousewheel(self, event):
+        """Scrolling mit Mausrad."""
+        if event.num == 5 or event.delta < 0:
+            self.canvas.yview_scroll(1, "units")
+        elif event.num == 4 or event.delta > 0:
+            self.canvas.yview_scroll(-1, "units")
+
+
 class PageJTAG(tk.Frame):
-    """JTAG Programmer Seite."""
+    """JTAG Programmer Seite - Vollständig scrollbar."""
     
     def __init__(self, parent):
         super().__init__(
@@ -32,9 +75,9 @@ class PageJTAG(tk.Frame):
         self._create_widgets()
     
     def _create_widgets(self):
-        """Erstellt alle Widgets für die JTAG Programmer Seite."""
+        """Erstellt alle Widgets mit ScrollableFrame."""
         
-        # HEADER
+        # HEADER (NICHT scrollbar)
         header_frame = tk.Frame(
             self,
             bg=theme_manager.get_color("surface"),
@@ -54,14 +97,14 @@ class PageJTAG(tk.Frame):
         )
         title_label.pack(anchor=tk.W)
         
-        # MAIN CONTENT
-        main_frame = tk.Frame(
-            self,
-            bg=theme_manager.get_color("background")
-        )
-        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        # SCROLLABLE CONTENT
+        scrollable = ScrollableFrame(self, bg=theme_manager.get_color("background"))
+        scrollable.pack(fill=tk.BOTH, expand=True)
         
-        # ═════════════════════════════════════════════════════
+        main_frame = scrollable.scrollable_frame
+        main_frame.configure(padx=20, pady=20)
+        
+        # ══════════════════════════════════════���══════════════
         # DEVICE SELECTION
         # ═════════════════════════════════════════════════════
         
@@ -137,7 +180,7 @@ class PageJTAG(tk.Frame):
         )
         self.file_label.pack(anchor=tk.W, pady=10)
         
-        # ═════════════════════════════════════════════════════
+        # ════════════════════════════════════════════���════════
         # PROGRAMMING OPTIONS
         # ═════════════════════════════════════════════════════
         
@@ -180,7 +223,7 @@ class PageJTAG(tk.Frame):
         
         # ═════════════════════════════════════════════════════
         # PROGRESS BAR
-        # ═════════════════════════════════════════════════════
+        # ══════════════════════════════════════��══════════════
         
         progress_frame = tk.LabelFrame(
             main_frame,
@@ -224,7 +267,7 @@ class PageJTAG(tk.Frame):
             pady=15,
             font=("Arial", 11, "bold")
         )
-        log_frame.pack(fill=tk.BOTH, expand=True, pady=10)
+        log_frame.pack(fill=tk.X, pady=10)
         
         # Scrollbar für Log
         scrollbar = ttk.Scrollbar(log_frame)
@@ -331,12 +374,11 @@ class PageJTAG(tk.Frame):
         
         self._log("[START] Programming started...")
         
-        # Starte Programmierung in separatem Thread
         self.programming_thread = threading.Thread(target=self._simulate_programming, daemon=True)
         self.programming_thread.start()
     
     def _simulate_programming(self):
-        """Simuliert den Programmierungsprozess mit korrektem Thread-Handling."""
+        """Simuliert den Programmierungsprozess."""
         device = self.device_var.get()
         
         try:
