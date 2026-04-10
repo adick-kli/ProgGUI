@@ -334,28 +334,3 @@ class ThemeManager:
 # ═══════════════════════════════════════════════════════════
 
 theme_manager = ThemeManager()
-
-# TEST-CODE (entferne später!)
-if __name__ == "__main__":
-    # Test 1: Manager erstellen
-    print("Test 1: Manager erstellen")
-    print(f"✅ theme_manager erstellt")
-    
-    # Test 2: Dark Theme testen
-    print("\nTest 2: Dark Theme")
-    theme_manager.set_theme(ThemeName.DARK)
-    print(f"Primary (Dark): {theme_manager.get_color('primary')}")
-    print(f"Background (Dark): {theme_manager.get_color('background')}")
-    
-    # Test 3: Light Theme testen
-    print("\nTest 3: Light Theme")
-    theme_manager.set_theme(ThemeName.LIGHT)
-    print(f"Primary (Light): {theme_manager.get_color('primary')}")
-    print(f"Background (Light): {theme_manager.get_color('background')}")
-    
-    # Test 4: Available Themes
-    print("\nTest 4: Available Themes")
-    for theme in theme_manager.get_available_themes():
-        print(f"- {theme.value}")
-    
-    print("\n✅ Alle Tests erfolgreich!")
