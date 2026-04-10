@@ -370,32 +370,3 @@ class LanguageManager:
 # ═══════════════════════════════════════════════════════════
 
 language_manager = LanguageManager()
-
-
-# ═══════════════════════════════════════════════════════════
-# TEST-CODE
-# ═══════════════════════════════════════════════════════════
-
-if __name__ == "__main__":
-    # Test 1: Manager erstellen
-    print("Test 1: Manager erstellen")
-    print(f"✅ language_manager erstellt")
-    
-    # Test 2: Deutsch testen
-    print("\nTest 2: Deutsch")
-    language_manager.set_language(Language.DEUTSCH)
-    print(f"Menü Datei: {language_manager.get_string('menu_file')}")
-    print(f"Button Start: {language_manager.get_string('btn_start')}")
-    
-    # Test 3: English testen
-    print("\nTest 3: English")
-    language_manager.set_language(Language.ENGLISH)
-    print(f"Menu File: {language_manager.get_string('menu_file')}")
-    print(f"Button Start: {language_manager.get_string('btn_start')}")
-    
-    # Test 4: Available Languages
-    print("\nTest 4: Available Languages")
-    for lang in language_manager.get_available_languages():
-        print(f"- {lang.value}")
-    
-    print("\n✅ Alle Tests erfolgreich!")
