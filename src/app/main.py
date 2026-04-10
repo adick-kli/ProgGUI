@@ -13,7 +13,7 @@ import os
 from .windows.main_window import MainWindow
 
 # Importiere Config Manager
-from .config.constants import theme_manager, language_manager
+from ..config.constants import theme_manager, language_manager
 
 
 def main():

@@ -14,7 +14,7 @@ import tkinter as tk
 from tkinter import ttk
 from typing import Optional, Callable
 
-from ..config.constants import theme_manager, language_manager
+from ...config.constants import theme_manager, language_manager
 
 
 class MainWindow:
