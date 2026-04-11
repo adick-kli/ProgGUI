@@ -15,6 +15,8 @@ from tkinter import ttk
 from typing import Optional, Callable
 
 from ...config.constants import theme_manager, language_manager
+from ..pages.page_products import PageProducts
+from ...core.product_manager import ProductManager
 
 
 class MainWindow:
@@ -29,7 +31,8 @@ class MainWindow:
         """
         self.root = root
         self.root.title("⚡ ProgGUI - AT32UC3 Programmer")
-    
+        self.product_manager = ProductManager()
+
         # ═════════════════════════════════════════════════════
         # LADE FENSTER-GEOMETRIE AUS CONFIG
         # ═════════════════════════════════════════════════════
