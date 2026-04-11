@@ -23,29 +23,56 @@ class MainWindow:
     def __init__(self, root: tk.Tk):
         """
         Initialisiert das Haupt-Fenster.
-        
+    
         Args:
             root: Tkinter Root-Fenster
         """
         self.root = root
         self.root.title("⚡ ProgGUI - AT32UC3 Programmer")
-        self.root.geometry("1200x800")
+    
+        # ═════════════════════════════════════════════════════
+        # LADE FENSTER-GEOMETRIE AUS CONFIG
+        # ═════════════════════════════════════════════════════
+    
+        try:
+            from ...config import get_config
+            config = get_config()
+            width, height = config.get_window_geometry()
+            self.root.geometry(f"{width}x{height}")
+        except:
+            self.root.geometry("1200x800")
+    
         self.root.minsize(1024, 768)
-        
+    
+        # Fenster-Position speichern bei Änderungen
+        try:
+            from ...config import get_config
+            config = get_config()
+            x, y = config.get_window_position()
+            self.root.geometry(f"+{x}+{y}")
+        except:
+            pass
+    
         # Farben aus Theme-Manager
         self.bg_color = theme_manager.get_color("background")
         self.fg_color = theme_manager.get_color("foreground")
         self.surface_color = theme_manager.get_color("surface")
-        
+    
         self.root.configure(bg=self.bg_color)
-        
+    
         # Tracker für aktuelle Seite
         self.current_page = None
-        
+    
         # Listener registrieren
         theme_manager.add_theme_listener(self._on_theme_changed)
         language_manager.add_language_listener(self._on_language_changed)
-        
+    
+        # ═════════════════════════════════════════════════════
+        # FENSTER-SCHLIESSEN EVENT
+        # ═════════════════════════════════════════════════════
+    
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+    
         # UI bauen
         self._create_menu_bar()
         self._create_toolbar()
@@ -376,3 +403,49 @@ class MainWindow:
         """
         self.device_label.config(text=f"Device: {device_name}")
         self.root.update_idletasks()
+
+    def _save_window_geometry(self):
+        """Speichert Fenster-Größe und Position in Config."""
+        try:
+            from ...config import get_config
+            config = get_config()
+        
+            # Fenster-Größe
+            width = self.root.winfo_width()
+            height = self.root.winfo_height()
+            config.set_window_geometry(width, height)
+        
+            # Fenster-Position
+            x = self.root.winfo_x()
+            y = self.root.winfo_y()
+            config.set_window_position(x, y)
+        
+            # Speichern
+            config.save()
+        except Exception as e:
+            print(f"[ERROR] Fehler beim Speichern der Fenster-Geometrie: {e}")
+
+    def on_closing(self):
+        """Wird aufgerufen beim Schließen des Fensters."""
+        print("[INFO] App wird geschlossen...")
+    
+        # Speichere Fenster-Geometrie
+        self._save_window_geometry()
+    
+        # Speichere Config
+        try:
+            from ...config import get_config
+            config = get_config()
+            config.save()
+        except:
+            pass
+    
+        # Schließe Datenbank
+        try:
+            from ...database import close_database
+            close_database()
+        except:
+            pass
+    
+        # Beende App
+        self.root.destroy()
