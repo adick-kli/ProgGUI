@@ -21,14 +21,13 @@ class PageDevices(tk.Frame):
             parent,
             bg=theme_manager.get_color("background")
         )
-        
-        # Mock-Daten (später aus Datenbank)
-        self.devices = [
-            {"id": 1, "name": "Atmel-ICE", "type": "JTAG", "port": "USB", "status": "Connected"},
-            {"id": 2, "name": "SAM-ICE", "type": "JTAG", "port": "USB", "status": "Disconnected"},
-            {"id": 3, "name": "J-Link", "type": "SWD", "port": "USB", "status": "Connected"},
-        ]
-        
+    
+        from ...database import get_database
+        self.db = get_database()
+    
+        # Lade Devices aus Datenbank
+        self.devices = self.db.get_all_devices()
+    
         self._create_widgets()
     
     def _create_widgets(self):
@@ -236,7 +235,7 @@ class PageDevices(tk.Frame):
         dialog.title("Add Device")
         dialog.geometry("400x300")
         dialog.configure(bg=theme_manager.get_color("background"))
-        
+    
         # Labels und Entry-Felder
         tk.Label(
             dialog,
@@ -244,17 +243,17 @@ class PageDevices(tk.Frame):
             bg=theme_manager.get_color("background"),
             fg=theme_manager.get_color("foreground")
         ).pack(anchor=tk.W, padx=20, pady=(20, 5))
-        
+    
         name_entry = tk.Entry(dialog, width=40)
         name_entry.pack(padx=20, pady=(0, 15))
-        
+    
         tk.Label(
             dialog,
             text="Device Type:",
             bg=theme_manager.get_color("background"),
             fg=theme_manager.get_color("foreground")
         ).pack(anchor=tk.W, padx=20, pady=(0, 5))
-        
+    
         type_var = tk.StringVar(value="JTAG")
         type_dropdown = ttk.Combobox(
             dialog,
@@ -264,14 +263,14 @@ class PageDevices(tk.Frame):
             width=37
         )
         type_dropdown.pack(padx=20, pady=(0, 15))
-        
+    
         tk.Label(
             dialog,
             text="Port:",
             bg=theme_manager.get_color("background"),
             fg=theme_manager.get_color("foreground")
         ).pack(anchor=tk.W, padx=20, pady=(0, 5))
-        
+    
         port_var = tk.StringVar(value="USB")
         port_dropdown = ttk.Combobox(
             dialog,
@@ -281,30 +280,34 @@ class PageDevices(tk.Frame):
             width=37
         )
         port_dropdown.pack(padx=20, pady=(0, 20))
-        
+    
         def save_device():
             name = name_entry.get()
             if not name:
                 messagebox.showerror("Error", "Please enter a device name!")
                 return
-            
-            new_device = {
-                "id": max([d["id"] for d in self.devices]) + 1,
-                "name": name,
-                "type": type_var.get(),
-                "port": port_var.get(),
-                "status": "Connected"
-            }
-            
-            self.devices.append(new_device)
-            self._populate_tree()
-            messagebox.showinfo("Success", f"Device '{name}' added successfully!")
-            dialog.destroy()
         
+            # In Datenbank speichern
+            device_id = self.db.add_device(
+                name=name,
+                device_type=type_var.get(),
+                port=port_var.get(),
+                status="Connected"
+            )
+        
+            if device_id:
+                # Reload devices from database
+                self.devices = self.db.get_all_devices()
+                self._populate_tree()
+                messagebox.showinfo("Success", f"Device '{name}' added successfully!")
+                dialog.destroy()
+            else:
+                messagebox.showerror("Error", f"Device '{name}' already exists!")
+    
         # Buttons
         button_frame = tk.Frame(dialog, bg=theme_manager.get_color("background"))
         button_frame.pack(fill=tk.X, padx=20, pady=20)
-        
+    
         tk.Button(
             button_frame,
             text="Save",
@@ -314,7 +317,7 @@ class PageDevices(tk.Frame):
             padx=20,
             pady=8
         ).pack(side=tk.LEFT, padx=5)
-        
+    
         tk.Button(
             button_frame,
             text="Cancel",
