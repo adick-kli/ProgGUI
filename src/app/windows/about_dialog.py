@@ -60,7 +60,7 @@ class AboutDialog(tk.Toplevel):
             bg=surface,
             fg=fg,
             font=("Arial", 10),
-            pady=(0, 10)
+            pady=5
         )
         subtitle_label.pack()
         
@@ -78,7 +78,7 @@ class AboutDialog(tk.Toplevel):
             bg=bg,
             fg=primary,
             font=("Arial", 10, "bold")
-        ).pack(anchor=tk.W, pady=(10, 5))
+        ).pack(anchor=tk.W, pady=5)
         
         tk.Label(
             content_frame,
@@ -86,7 +86,7 @@ class AboutDialog(tk.Toplevel):
             bg=bg,
             fg=fg,
             font=("Arial", 10)
-        ).pack(anchor=tk.W, pady=(0, 15))
+        ).pack(anchor=tk.W, pady=5)
         
         # Author
         tk.Label(
@@ -95,7 +95,7 @@ class AboutDialog(tk.Toplevel):
             bg=bg,
             fg=primary,
             font=("Arial", 10, "bold")
-        ).pack(anchor=tk.W, pady=(0, 5))
+        ).pack(anchor=tk.W, pady=5)
         
         tk.Label(
             content_frame,
@@ -103,7 +103,7 @@ class AboutDialog(tk.Toplevel):
             bg=bg,
             fg=fg,
             font=("Arial", 10)
-        ).pack(anchor=tk.W, pady=(0, 15))
+        ).pack(anchor=tk.W, pady=5)
         
         # Description
         tk.Label(
@@ -112,7 +112,7 @@ class AboutDialog(tk.Toplevel):
             bg=bg,
             fg=primary,
             font=("Arial", 10, "bold")
-        ).pack(anchor=tk.W, pady=(0, 5))
+        ).pack(anchor=tk.W, pady=5)
         
         desc_text = tk.Text(
             content_frame,
@@ -124,17 +124,17 @@ class AboutDialog(tk.Toplevel):
             relief=tk.FLAT,
             state=tk.DISABLED
         )
-        desc_text.pack(fill=tk.X, pady=(0, 15))
+        desc_text.pack(fill=tk.X, pady=5)
         
         desc_text.config(state=tk.NORMAL)
         desc_text.insert(tk.END, 
             "ProgGUI ist eine professionelle Programmierungssoftware "
-            "für AT32UC3 Mikrocontroller.\n\n"
+            "fuer AT32UC3 Mikrocontroller.\n\n"
             "Features:\n"
-            "• JTAG & Bootloader Programmierung\n"
-            "• Dark/Light Theme Support\n"
-            "• Multi-Language Support\n"
-            "• Device Manager"
+            "* JTAG & Bootloader Programmierung\n"
+            "* Dark/Light Theme Support\n"
+            "* Multi-Language Support\n"
+            "* Device Manager"
         )
         desc_text.config(state=tk.DISABLED)
         
@@ -145,7 +145,7 @@ class AboutDialog(tk.Toplevel):
             bg=bg,
             fg=fg,
             font=("Arial", 9, "italic")
-        ).pack(anchor=tk.W)
+        ).pack(anchor=tk.W, pady=5)
         
         # ═════════════════════════════════════════════════════
         # BUTTONS

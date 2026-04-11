@@ -39,11 +39,14 @@ def main():
         
         # MainWindow initialisieren
         main_window = MainWindow(root)
-        logger.info("MainWindow erstellt ✅")
+        logger.info("[OK] MainWindow erstellt")
         
         # Home-Seite laden
         main_window.show_home()
-        logger.info("Home-Seite geladen ✅")
+        logger.info("[OK] Home-Seite geladen")
+        
+        logger.info("App ist bereit!")
+        logger.info("=" * 60)
         
         # Fenster anzeigen
         root.mainloop()

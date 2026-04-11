@@ -9,6 +9,7 @@ Icon Manager
 
 import base64
 import io
+import tkinter as tk
 from pathlib import Path
 
 
@@ -66,7 +67,6 @@ class IconManager:
 # Einfacher App-Icon als Python-Code (für bessere Kompatibilität)
 def create_simple_icon():
     """Erstellt einen einfachen App-Icon."""
-    import tkinter as tk
     
     # Erstelle ein 16x16 Pixel Bild (grüner Kreis mit Blitz)
     icon = tk.PhotoImage(width=16, height=16)

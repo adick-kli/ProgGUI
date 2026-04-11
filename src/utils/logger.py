@@ -4,9 +4,11 @@
 Logger Module
 - Logging für ProgGUI
 - Console + File Logging
+- UTF-8 Support für alle Plattformen
 """
 
 import logging
+import sys
 from pathlib import Path
 from datetime import datetime
 
@@ -19,6 +21,9 @@ class ProgGUILogger:
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
         
+        # Clear existing handlers
+        self.logger.handlers.clear()
+        
         # Erstelle logs/ Verzeichnis
         logs_dir = Path(__file__).parent.parent.parent / "logs"
         logs_dir.mkdir(exist_ok=True)
@@ -26,12 +31,12 @@ class ProgGUILogger:
         # Log-Datei
         log_file = logs_dir / f"proggui_{datetime.now().strftime('%Y%m%d')}.log"
         
-        # File Handler
-        file_handler = logging.FileHandler(log_file)
+        # File Handler mit UTF-8
+        file_handler = logging.FileHandler(log_file, encoding='utf-8')
         file_handler.setLevel(logging.DEBUG)
         
-        # Console Handler
-        console_handler = logging.StreamHandler()
+        # Console Handler mit UTF-8
+        console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(logging.INFO)
         
         # Formatter
