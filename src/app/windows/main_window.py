@@ -78,6 +78,16 @@ class MainWindow:
         self._create_toolbar()
         self._create_content_frame()
         self._create_status_bar()
+
+        # ═════════════════════════════════════════════════════
+        # APP-ICON ANWENDEN
+        # ═════════════════════════════════════════════════════
+        
+        try:
+            from ...utils.icon_manager import IconManager
+            IconManager.apply_icon_to_window(self.root)
+        except:
+            pass
     
     # ═══════════════════════════════════════════════════════════
     # MENÜBAR
@@ -325,8 +335,8 @@ class MainWindow:
     
     def show_about(self):
         """Zeigt About Dialog."""
-        # Placeholder für später
-        print("[INFO] About Dialog - TODO")
+        from .about_dialog import AboutDialog
+        AboutDialog(self.root)
     
     def show_documentation(self):
         """Zeigt Dokumentation."""
