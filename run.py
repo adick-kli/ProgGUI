@@ -3,7 +3,6 @@
 """
 ProgGUI Starter
 - Main Entry Point
-- Fenster erstellen + zeigen
 """
 
 import tkinter as tk
@@ -20,7 +19,6 @@ from src.utils import get_logger
 def main():
     """Startet ProgGUI."""
     
-    # Logger initialisieren
     logger = get_logger()
     logger.info("=" * 60)
     logger.info("ProgGUI wird gestartet...")
@@ -30,20 +28,16 @@ def main():
         # Root Fenster erstellen
         root = tk.Tk()
         
-        # Fenster-Icon
-        try:
-            from src.utils import IconManager
-            IconManager.apply_icon_to_window(root)
-        except Exception as e:
-            logger.warning(f"Icon konnte nicht geladen werden: {e}")
-        
-        # MainWindow initialisieren
+        # MainWindow initialisieren (mit root!)
         main_window = MainWindow(root)
         logger.info("[OK] MainWindow erstellt")
         
-        # Home-Seite laden
-        main_window.show_home()
-        logger.info("[OK] Home-Seite geladen")
+        # Fenster-Icon
+        try:
+            from src.utils.icon_manager import IconManager
+            IconManager.apply_icon_to_window(root)
+        except Exception as e:
+            logger.warning(f"Icon konnte nicht geladen werden: {e}")
         
         logger.info("App ist bereit!")
         logger.info("=" * 60)
@@ -54,7 +48,7 @@ def main():
         logger.info("ProgGUI wurde beendet")
         
     except Exception as e:
-        logger.critical(f"Kritischer Fehler: {e}", exc_info=True)
+        logger.critical(f"Kritischer Fehler: {e}")
         raise
 
 
