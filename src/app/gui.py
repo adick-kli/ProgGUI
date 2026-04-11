@@ -26,7 +26,7 @@ from .controller import ProgrammerController
 class ProgGUI(tk.Tk):
     """Hauptfenster für ProgGUI."""
     
-    def __init__(self):
+    def __init__(self, product_manager=None):  # ← NEU: product_manager Parameter
         super().__init__()
         self.title("⚡ AT32UC3A1512 Programmer")
         self.configure(bg=BG)
@@ -35,6 +35,9 @@ class ProgGUI(tk.Tk):
     
         # Controller
         self.controller = ProgrammerController()
+        
+        # ProductManager (neu)
+        self.product_manager = product_manager  # ← NEU!
     
         # ⭐ Variablen ZUERST initialisieren
         self._init_variables()

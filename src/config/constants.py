@@ -1,6 +1,9 @@
 ﻿# -*- coding: utf-8 -*-
 # src/config/constants.py
 
+# ✅ APP VERSION (NEU!)
+APP_VERSION = "1.0.0"
+
 # ═══════════════════════════════════════════════════════════
 # THEME & LANGUAGE MANAGER (neu)
 # ═══════════════════════════════════════════════════════════

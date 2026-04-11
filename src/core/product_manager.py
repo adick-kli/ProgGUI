@@ -1,9 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 # src/core/product_manager.py
 """
-ProductManager - Verwaltet alle Produkte
-- CRUD-Operationen auf products.db
-- Lädt/speichert Products
+ProductManager - Verwaltet alle Produkte in products.db
 """
 
 import sqlite3
@@ -71,15 +69,7 @@ class ProductManager:
             conn.commit()
     
     def create(self, product: Product) -> Product:
-        """
-        Erstellt ein neues Produkt.
-        
-        Args:
-            product: Product-Objekt ohne ID
-        
-        Returns:
-            Product mit neu zugewiesener ID
-        """
+        """Erstellt ein neues Produkt."""
         steps_json = json.dumps([
             {
                 "number": s.number,
@@ -157,15 +147,7 @@ class ProductManager:
         return [self._row_to_product(row) for row in rows]
     
     def update(self, product: Product) -> bool:
-        """
-        Aktualisiert ein bestehendes Produkt.
-        
-        Args:
-            product: Product mit ID
-        
-        Returns:
-            True bei Erfolg
-        """
+        """Aktualisiert ein bestehendes Produkt."""
         if not product.id:
             raise ValueError("Product muss eine ID haben zum Update")
         

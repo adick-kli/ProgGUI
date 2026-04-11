@@ -34,7 +34,9 @@ class PageProducts(tk.Frame):
     
     def _build_ui(self):
         """Baut die UI auf."""
-        # Header
+        # ─────────────────────────────────────────────────────
+        # HEADER
+        # ─────────────────────────────────────────────────────
         header = tk.Frame(self, bg=BG, height=60)
         header.pack(fill="x", padx=20, pady=(12, 4))
         
@@ -69,7 +71,9 @@ class PageProducts(tk.Frame):
             font=FONT_MAIN, cursor="hand2", padx=15, pady=8
         ).pack(side="left", padx=4)
         
-        # Main Content
+        # ─────────────────────────────────────────────────────
+        # MAIN CONTENT
+        # ─────────────────────────────────────────────────────
         main = tk.Frame(self, bg=BG)
         main.pack(fill="both", expand=True, padx=16, pady=12)
         
@@ -155,7 +159,7 @@ class PageProducts(tk.Frame):
         ).pack(side="left", padx=2)
         
         tk.Button(
-            button_frame, text="⚡ Use for JTAG",
+            button_frame, text="⚡ Use",
             command=lambda: self._use_for_jtag(product),
             bg=GREEN, fg=BG, relief="flat",
             font=FONT_MAIN, cursor="hand2", padx=10
@@ -168,8 +172,8 @@ class PageProducts(tk.Frame):
         # Product Details
         details = [
             ("Controller:", product.controller),
-            ("Boot HEX:", Path(product.bootloader_hex).name),
-            ("User HEX:", Path(product.userpage_hex).name),
+            ("Boot HEX:", Path(product.bootloader_hex).name if product.bootloader_hex else "—"),
+            ("User HEX:", Path(product.userpage_hex).name if product.userpage_hex else "—"),
             ("Fuse Bits:", product.fuse_bits_value),
         ]
         
@@ -248,10 +252,9 @@ class PageProducts(tk.Frame):
     
     def _use_for_jtag(self, product: Product):
         """Lädt Produkt für JTAG-Seite."""
-        # TODO: Später mit JTAG-Seite verbinden
         messagebox.showinfo(
             "Info",
-            f"Produkt '{product.name}' wird für JTAG Programmierung verwendet."
+            f"Produkt '{product.name}' wird für JTAG Programmierung verwendet.\n\n(Integration kommt später)"
         )
 
 
@@ -265,7 +268,7 @@ class ProductEditDialog(tk.Toplevel):
         self.is_new = product is None
         
         self.title("✏️ Produkt bearbeiten" if product else "➕ Neues Produkt")
-        self.geometry("600x800")
+        self.geometry("700x900")
         self.configure(bg=BG)
         
         self._build_ui()
@@ -273,7 +276,24 @@ class ProductEditDialog(tk.Toplevel):
     
     def _build_ui(self):
         """Baut das Dialog-UI auf."""
-        main = tk.Frame(self, bg=BG)
+        # Scrollable Main Frame
+        canvas = tk.Canvas(self, bg=BG, highlightthickness=0)
+        scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        scrollable_frame = tk.Frame(canvas, bg=BG)
+        
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        
+        # Content
+        main = tk.Frame(scrollable_frame, bg=BG)
         main.pack(fill="both", expand=True, padx=20, pady=20)
         
         # Name
@@ -403,7 +423,7 @@ class ProductEditDialog(tk.Toplevel):
                     userpage_hex=self.fields["userpage_hex"].get(),
                     fuse_bits_value=self.fields["fuse_bits"].get(),
                     steps=self._get_steps(),
-                    atprogram_path="",  # TODO: Aus Settings laden
+                    atprogram_path="",
                     atbackend_path="",
                     objcopy_path="",
                     created_at=datetime.now(),
