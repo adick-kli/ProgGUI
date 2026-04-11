@@ -1,464 +1,211 @@
 ﻿# -*- coding: utf-8 -*-
 # src/app/windows/main_window.py
 """
-Haupt-Fenster von ProgGUI
-- Menübar (File, Programming, Help)
-- Toolbar mit Tab-Navigation
-- Content-Frame für dynamische Seiten
-- Statusleiste
-- Theme-Integration
-- Sprach-Integration
+ProgGUI Hauptfenster
+- Toolbar Navigation
+- Page Management
+- Integration aller Komponenten
 """
 
 import tkinter as tk
 from tkinter import ttk
-from typing import Optional, Callable
+from pathlib import Path
 
-from ...config.constants import theme_manager, language_manager
+from ..pages.page_home import PageHome
+from ..pages.page_settings import PageSettings
+from ..pages.page_devices import PageDevices
 from ..pages.page_products import PageProducts
+from ..pages.page_jtag import PageJTAG
+from ..pages.page_bootloader import PageBootloader
+
+from ...config.constants import (
+    BG, BG2, BG3, ACCENT, ACCENT2, GREEN, RED, YELLOW, TEXT, SUBTEXT,
+    FONT_MAIN, FONT_TITLE, FONT_STEP, FONT_MONO,
+    MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, APP_VERSION
+)
+from ...config.settings import settings
 from ...core.product_manager import ProductManager
+from ..controller import ProgrammerController
 
 
-class MainWindow:
-    """Haupt-Fenster von ProgGUI."""
+class MainWindow(tk.Tk):
+    """Hauptfenster der ProgGUI Anwendung."""
     
-    def __init__(self, root: tk.Tk):
-        """
-        Initialisiert das Haupt-Fenster.
-    
-        Args:
-            root: Tkinter Root-Fenster
-        """
-        self.root = root
-        self.root.title("⚡ ProgGUI - AT32UC3 Programmer")
+    def __init__(self):
+        super().__init__()
+        
+        # Window-Properties
+        self.title("⚡ ProgGUI - JTAG & Bootloader Programmer")
+        self.configure(bg=BG)
+        self.geometry("1200x700")
+        self.minsize(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
+        
+        # Initialisiere Manager
         self.product_manager = ProductManager()
-
-        # ═════════════════════════════════════════════════════
-        # LADE FENSTER-GEOMETRIE AUS CONFIG
-        # ═════════════════════════════════════════════════════
-    
-        try:
-            from ...config import get_config
-            config = get_config()
-            width, height = config.get_window_geometry()
-            self.root.geometry(f"{width}x{height}")
-        except:
-            self.root.geometry("1200x800")
-    
-        self.root.minsize(1024, 768)
-    
-        # Fenster-Position speichern bei Änderungen
-        try:
-            from ...config import get_config
-            config = get_config()
-            x, y = config.get_window_position()
-            self.root.geometry(f"+{x}+{y}")
-        except:
-            pass
-    
-        # Farben aus Theme-Manager
-        self.bg_color = theme_manager.get_color("background")
-        self.fg_color = theme_manager.get_color("foreground")
-        self.surface_color = theme_manager.get_color("surface")
-    
-        self.root.configure(bg=self.bg_color)
-    
-        # Tracker für aktuelle Seite
+        self.controller = ProgrammerController()
+        
+        # Pages Dictionary
+        self.pages = {}
         self.current_page = None
+        
+        # Build UI
+        self._build_ui()
+        
+        # Lade Home-Seite als Default
+        self._show_page("home")
     
-        # Listener registrieren
-        theme_manager.add_theme_listener(self._on_theme_changed)
-        language_manager.add_language_listener(self._on_language_changed)
+    def _build_ui(self):
+        """Baut das komplette UI auf."""
+        # ─────────────────────────────────────────────────────
+        # HEADER BAR
+        # ─────────────────────────────────────────────────────
+        self._build_header()
+        
+        # ─────────────────────────────────────────────────────
+        # TOOLBAR (Navigation)
+        # ─────────────────────────────────────────────────────
+        self._build_toolbar()
+        
+        # ─���───────────────────────────────────────────────────
+        # MAIN CONTENT AREA (Pages)
+        # ─────────────────────────────────────────────────────
+        self.content_frame = tk.Frame(self, bg=BG)
+        self.content_frame.pack(fill="both", expand=True)
+        
+        # ─────────────────────────────────────────────────────
+        # BUILD ALL PAGES
+        # ─────────────────────────────────────────────────────
+        self._build_pages()
+        
+        # ─────────────────────────────────────────────────────
+        # STATUSBAR (Bottom)
+        # ─────────────────────────────────────────────────────
+        self._build_statusbar()
     
-        # ═════════════════════════════════════════════════════
-        # FENSTER-SCHLIESSEN EVENT
-        # ═════════════════════════════════════════════════════
+    def _build_header(self):
+        """Baut die Header-Bar."""
+        header = tk.Frame(self, bg=ACCENT, height=50)
+        header.pack(fill="x", side="top")
+        header.pack_propagate(False)
+        
+        # Logo/Title
+        tk.Label(
+            header, text="⚡ ProgGUI",
+            font=(FONT_MAIN[0], 18, "bold"),
+            bg=ACCENT, fg=BG
+        ).pack(side="left", padx=20, pady=12)
+        
+        # Version
+        tk.Label(
+            header, text=f"v{APP_VERSION}",
+            font=FONT_MAIN,
+            bg=ACCENT, fg=BG
+        ).pack(side="left", padx=2)
+        
+        # Spacer
+        tk.Frame(header, bg=ACCENT).pack(side="left", fill="x", expand=True)
+        
+        # Help/Settings in Header (optional)
+        tk.Button(
+            header, text="?",
+            bg=ACCENT2, fg=BG, relief="flat",
+            font=FONT_MAIN, cursor="hand2", padx=10, pady=8
+        ).pack(side="right", padx=4, pady=6)
     
-        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+    def _build_toolbar(self):
+        """Baut die Toolbar mit Navigation Buttons."""
+        toolbar = tk.Frame(self, bg=BG2, height=50)
+        toolbar.pack(fill="x", side="top")
+        toolbar.pack_propagate(False)
+        
+        # Navigation Buttons
+        buttons = [
+            ("🏠 HOME", "home"),
+            ("⚙️  SETTINGS", "settings"),
+            ("🔧 PRODUCTS", "products"),
+            ("⚡ JTAG", "jtag"),
+            ("🔄 BOOTLOADER", "bootloader"),
+        ]
+        
+        self.page_buttons = {}
+        
+        for btn_text, page_name in buttons:
+            btn = tk.Button(
+                toolbar, text=btn_text,
+                font=FONT_MAIN,
+                bg=BG2, fg=SUBTEXT, relief="flat", cursor="hand2",
+                padx=15, pady=10,
+                command=lambda p=page_name: self._show_page(p)
+            )
+            btn.pack(side="left", padx=4, pady=6)
+            self.page_buttons[page_name] = btn
     
-        # UI bauen
-        self._create_menu_bar()
-        self._create_toolbar()
-        self._create_content_frame()
-        self._create_status_bar()
-
-        # ═════════════════════════════════════════════════════
-        # APP-ICON ANWENDEN
-        # ═════════════════════════════════════════════════════
+    def _build_pages(self):
+        """Erstellt alle Pages."""
+        # Home
+        self.pages["home"] = PageHome(self.content_frame)
         
-        try:
-            from ...utils.icon_manager import IconManager
-            IconManager.apply_icon_to_window(self.root)
-        except:
-            pass
+        # Settings
+        self.pages["settings"] = PageSettings(self.content_frame)
+        
+        # Products (NEU!)
+        self.pages["products"] = PageProducts(self.content_frame, self.product_manager)
+        
+        # JTAG
+        self.pages["jtag"] = PageJTAG(self.content_frame, self.product_manager, self.controller)
+        
+        # Bootloader
+        self.pages["bootloader"] = PageBootloader(self.content_frame, self.product_manager, self.controller)
     
-    # ═══════════════════════════════════════════════════════════
-    # MENÜBAR
-    # ═══════════════════════════════════════════════════════════
+    def _build_statusbar(self):
+        """Baut die Status-Bar am unteren Rand."""
+        statusbar = tk.Frame(self, bg=BG2, height=30)
+        statusbar.pack(fill="x", side="bottom")
+        statusbar.pack_propagate(False)
+        
+        tk.Label(
+            statusbar, text="✅ Bereit",
+            bg=BG2, fg=GREEN, font=FONT_MAIN, padx=20
+        ).pack(side="left")
+        
+        tk.Label(
+            statusbar, text="© 2026 ProgGUI",
+            bg=BG2, fg=SUBTEXT, font=FONT_MAIN
+        ).pack(side="right", padx=20)
     
-    def _create_menu_bar(self):
-        """Erstellt die Menübar mit File, Programming, Help."""
-        self.menubar = tk.Menu(
-            self.root,
-            bg=theme_manager.get_color("menubar_bg"),
-            fg=theme_manager.get_color("menubar_fg"),
-            activebackground=theme_manager.get_color("primary"),
-            activeforeground=theme_manager.get_color("button_fg")
-        )
-        self.root.config(menu=self.menubar)
-        
-        # ════════════════════════════════════════════════════
-        # FILE MENU
-        # ════════════════════════════════════════════════════
-        self.file_menu = tk.Menu(self.menubar, tearoff=0)
-        self.menubar.add_cascade(
-            label=language_manager.get_string("menu_file"),
-            menu=self.file_menu
-        )
-        
-        self.file_menu.add_command(
-            label=language_manager.get_string("menu_home"),
-            command=self.show_home
-        )
-        self.file_menu.add_command(
-            label=language_manager.get_string("menu_settings"),
-            command=self.show_settings
-        )
-        self.file_menu.add_command(
-            label=language_manager.get_string("menu_device_manager"),
-            command=self.show_devices
-        )
-        self.file_menu.add_separator()
-        self.file_menu.add_command(
-            label=language_manager.get_string("menu_exit"),
-            command=self.root.quit
-        )
-        
-        # ════════════════════════════════════════════════════
-        # PROGRAMMING MENU
-        # ════════════════════════════════════════════════════
-        self.prog_menu = tk.Menu(self.menubar, tearoff=0)
-        self.menubar.add_cascade(
-            label=language_manager.get_string("menu_programming"),
-            menu=self.prog_menu
-        )
-        
-        self.prog_menu.add_command(
-            label=language_manager.get_string("menu_jtag"),
-            command=self.show_jtag
-        )
-        self.prog_menu.add_command(
-            label=language_manager.get_string("menu_bootloader"),
-            command=self.show_bootloader
-        )
-        
-        # ════════════════════════════════════════════════════
-        # HELP MENU
-        # ════════════════════════════════════════════════════
-        self.help_menu = tk.Menu(self.menubar, tearoff=0)
-        self.menubar.add_cascade(
-            label=language_manager.get_string("menu_help"),
-            menu=self.help_menu
-        )
-        
-        self.help_menu.add_command(
-            label=language_manager.get_string("menu_about"),
-            command=self.show_about
-        )
-        self.help_menu.add_command(
-            label=language_manager.get_string("menu_documentation"),
-            command=self.show_documentation
-        )
-    
-    # ═══════════════════════════════════════════════════════════
-    # TOOLBAR MIT TABS
-    # ═══════════════════════════════════════════════════════════
-    
-    def _create_toolbar(self):
-        """Erstellt Toolbar mit Tab-Navigation."""
-        self.toolbar = tk.Frame(
-            self.root,
-            bg=theme_manager.get_color("surface"),
-            height=50
-        )
-        self.toolbar.pack(fill=tk.X, padx=0, pady=0)
-        self.toolbar.pack_propagate(False)
-        
-        # Button-Stil
-        button_style = {
-            "bg": theme_manager.get_color("surface"),
-            "fg": theme_manager.get_color("foreground"),
-            "activebackground": theme_manager.get_color("button_hover"),
-            "activeforeground": theme_manager.get_color("highlight"),
-            "border": 0,
-            "padx": 15,
-            "pady": 12,
-            "font": ("Arial", 11),
-            "highlightthickness": 0,
-            "relief": tk.FLAT,
-            "cursor": "hand2"
-        }
-        
-        # Tabs
-        self.home_btn = tk.Button(
-            self.toolbar,
-            text="🏠 Home",
-            command=self.show_home,
-            **button_style
-        )
-        self.home_btn.pack(side=tk.LEFT, padx=5)
-        
-        self.settings_btn = tk.Button(
-            self.toolbar,
-            text="⚙️ Settings",
-            command=self.show_settings,
-            **button_style
-        )
-        self.settings_btn.pack(side=tk.LEFT, padx=5)
-        
-        self.devices_btn = tk.Button(
-            self.toolbar,
-            text="🔧 Devices",
-            command=self.show_devices,
-            **button_style
-        )
-        self.devices_btn.pack(side=tk.LEFT, padx=5)
-        
-        self.jtag_btn = tk.Button(
-            self.toolbar,
-            text="📌 JTAG",
-            command=self.show_jtag,
-            **button_style
-        )
-        self.jtag_btn.pack(side=tk.LEFT, padx=5)
-        
-        self.bootloader_btn = tk.Button(
-            self.toolbar,
-            text="🚀 Bootloader",
-            command=self.show_bootloader,
-            **button_style
-        )
-        self.bootloader_btn.pack(side=tk.LEFT, padx=5)
-    
-    # ═══════════════════════════════════════════════════════════
-    # CONTENT FRAME
-    # ═══════════════════════════════════════════════════════════
-    
-    def _create_content_frame(self):
-        """Erstellt den Content-Frame für dynamische Seiten."""
-        self.content_frame = tk.Frame(
-            self.root,
-            bg=theme_manager.get_color("background")
-        )
-        self.content_frame.pack(fill=tk.BOTH, expand=True, padx=0, pady=0)
-    
-    # ═══════════════════════════════════════════════════════════
-    # STATUSBAR
-    # ═══════════════════════════════════════════════════════════
-    
-    def _create_status_bar(self):
-        """Erstellt die Statusleiste."""
-        self.status_bar = tk.Frame(
-            self.root,
-            bg=theme_manager.get_color("statusbar_bg"),
-            height=25
-        )
-        self.status_bar.pack(fill=tk.X, side=tk.BOTTOM)
-        self.status_bar.pack_propagate(False)
-        
-        self.status_label = tk.Label(
-            self.status_bar,
-            text="✅ Ready",
-            bg=theme_manager.get_color("statusbar_bg"),
-            fg=theme_manager.get_color("statusbar_fg"),
-            font=("Arial", 9),
-            padx=10,
-            pady=3
-        )
-        self.status_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
-        
-        # Device Info
-        self.device_label = tk.Label(
-            self.status_bar,
-            text="Device: None",
-            bg=theme_manager.get_color("statusbar_bg"),
-            fg=theme_manager.get_color("statusbar_fg"),
-            font=("Arial", 9),
-            padx=10,
-            pady=3
-        )
-        self.device_label.pack(side=tk.RIGHT)
-    
-    # ═════════════════════════════���════════════════════════��════
-    # PAGE SWITCHING
-    # ═══════════════════════════════════════════════════════════
-    
-    def _switch_page(self, page_class):
+    def _show_page(self, page_name: str):
         """
-        Wechselt zu einer anderen Seite.
+        Wechselt zur angegebenen Seite.
         
         Args:
-            page_class: Seiten-Klasse (z.B. PageHome)
+            page_name: Name der Seite (home, settings, products, jtag, bootloader)
         """
-        # Lösche alte Seite
+        # Verstecke aktuelle Seite
         if self.current_page:
-            self.current_page.destroy()
+            self.pages[self.current_page].pack_forget()
+            # Deaktiviere Button
+            if self.current_page in self.page_buttons:
+                self.page_buttons[self.current_page].configure(
+                    bg=BG2, fg=SUBTEXT
+                )
         
-        # Erstelle neue Seite
-        try:
-            self.current_page = page_class(self.content_frame)
-            self.current_page.pack(fill=tk.BOTH, expand=True)
-        except Exception as e:
-            print(f"[ERROR] Fehler beim Laden der Seite: {e}")
-    
-    def show_home(self):
-        """Zeigt Home-Seite."""
-        from ..pages.page_home import PageHome
-        self._switch_page(PageHome)
-    
-    def show_settings(self):
-        """Zeigt Settings-Seite."""
-        from ..pages.page_settings import PageSettings
-        self._switch_page(PageSettings)
-    
-    def show_devices(self):
-        """Zeigt Device Manager-Seite."""
-        from ..pages.page_devices import PageDevices
-        self._switch_page(PageDevices)
-    
-    def show_jtag(self):
-        """Zeigt JTAG Programmer-Seite."""
-        from ..pages.page_jtag import PageJTAG
-        self._switch_page(PageJTAG)
-    
-    def show_bootloader(self):
-        """Zeigt Bootloader Programmer-Seite."""
-        from ..pages.page_bootloader import PageBootloader
-        self._switch_page(PageBootloader)
-    
-    def show_about(self):
-        """Zeigt About Dialog."""
-        from .about_dialog import AboutDialog
-        AboutDialog(self.root)
-    
-    def show_documentation(self):
-        """Zeigt Dokumentation."""
-        # Placeholder für später
-        print("[INFO] Documentation - TODO")
-    
-    # ═══════════════════════════════════════════════════════════
-    # THEME & LANGUAGE UPDATES
-    # ═══════════════════════════════════════════════════════════
-    
-    def _on_theme_changed(self, new_theme):
-        """Wird aufgerufen wenn Theme gewechselt wird."""
-        self._update_colors()
-    
-    def _on_language_changed(self, new_language):
-        """Wird aufgerufen wenn Sprache gewechselt wird."""
-        self._update_labels()
-    
-    def _update_colors(self):
-        """Aktualisiert alle Farben basierend auf aktuellem Theme."""
-        # Root
-        bg = theme_manager.get_color("background")
-        self.root.configure(bg=bg)
-        
-        # Toolbar
-        self.toolbar.configure(bg=theme_manager.get_color("surface"))
-        
-        # Status Bar
-        self.status_bar.configure(bg=theme_manager.get_color("statusbar_bg"))
-        self.status_label.configure(
-            bg=theme_manager.get_color("statusbar_bg"),
-            fg=theme_manager.get_color("statusbar_fg")
-        )
-        self.device_label.configure(
-            bg=theme_manager.get_color("statusbar_bg"),
-            fg=theme_manager.get_color("statusbar_fg")
-        )
-        
-        # Content Frame
-        self.content_frame.configure(bg=bg)
-    
-    def _update_labels(self):
-        """Aktualisiert alle Labels basierend auf aktuellem Language."""
-        # Menüs
-        try:
-            self.menubar.delete(0, tk.END)
-            self._create_menu_bar()
-        except:
-            pass
-        
-        # Toolbar Buttons
-        self.home_btn.config(text="🏠 Home")
-        self.settings_btn.config(text="⚙️ Settings")
-        self.devices_btn.config(text="🔧 Devices")
-        self.jtag_btn.config(text="📌 JTAG")
-        self.bootloader_btn.config(text="🚀 Bootloader")
-    
-    def set_status(self, message: str):
-        """
-        Setzt die Status-Nachricht.
-        
-        Args:
-            message: Status-Text
-        """
-        self.status_label.config(text=message)
-        self.root.update_idletasks()
-    
-    def set_device(self, device_name: str):
-        """
-        Setzt das Gerät-Label.
-        
-        Args:
-            device_name: Geräte-Name
-        """
-        self.device_label.config(text=f"Device: {device_name}")
-        self.root.update_idletasks()
+        # Zeige neue Seite
+        if page_name in self.pages:
+            self.pages[page_name].pack(fill="both", expand=True)
+            self.current_page = page_name
+            
+            # Aktiviere Button
+            if page_name in self.page_buttons:
+                self.page_buttons[page_name].configure(
+                    bg=ACCENT2, fg=BG
+                )
 
-    def _save_window_geometry(self):
-        """Speichert Fenster-Größe und Position in Config."""
-        try:
-            from ...config import get_config
-            config = get_config()
-        
-            # Fenster-Größe
-            width = self.root.winfo_width()
-            height = self.root.winfo_height()
-            config.set_window_geometry(width, height)
-        
-            # Fenster-Position
-            x = self.root.winfo_x()
-            y = self.root.winfo_y()
-            config.set_window_position(x, y)
-        
-            # Speichern
-            config.save()
-        except Exception as e:
-            print(f"[ERROR] Fehler beim Speichern der Fenster-Geometrie: {e}")
 
-    def on_closing(self):
-        """Wird aufgerufen beim Schließen des Fensters."""
-        print("[INFO] App wird geschlossen...")
-    
-        # Speichere Fenster-Geometrie
-        self._save_window_geometry()
-    
-        # Speichere Config
-        try:
-            from ...config import get_config
-            config = get_config()
-            config.save()
-        except:
-            pass
-    
-        # Schließe Datenbank
-        try:
-            from ...database import close_database
-            close_database()
-        except:
-            pass
-    
-        # Beende App
-        self.root.destroy()
+def main():
+    """Entry Point für die Anwendung."""
+    app = MainWindow()
+    app.mainloop()
+
+
+if __name__ == "__main__":
+    main()
