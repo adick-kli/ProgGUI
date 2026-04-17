@@ -37,22 +37,23 @@ class Product:
     fuse_bits_value: str                 # "F675FFFF"
     
     # Programmier-Schritte
-    steps: List[ProgrammingStep]         # [Step1, Step2, ..., Step6]
-    
-    adapter: str = "atmelice"           # z.B. "atmelice", "avrdragon"
-    interface: str = "jtag"             # z.B. "jtag", "swd"
-    user_writes: Optional[list] = None  # [{"address": "0x808001FC", "value": "E11EFFD7"}, ...]
-    
+    steps: List[ProgrammingStep]         # [Step1, Step2, ..., Step6] 
 
     # Tool-Konfiguration
     atprogram_path: str                  # Pfad zu atprogram.exe
     atbackend_path: str                  # Pfad zu atbackend.exe
     objcopy_path: str                    # Pfad zu avr32-objcopy.exe
-    
+
+
+
     # Metadaten
     created_at: datetime                 # Wann erstellt
     updated_at: datetime                 # Wann zuletzt geändert
     last_programmed: Optional[datetime]  # Wann zuletzt programmiert
+ 
+    adapter: str = "atmelice"           # z.B. "atmelice", "avrdragon"
+    interface: str = "jtag"             # z.B. "jtag", "swd"
+    user_writes: Optional[list] = None  # [{"address": "0x808001FC", "value": "E11EFFD7"}, ...]   
     
     def __repr__(self):
         return f"Product(name={self.name}, controller={self.controller})"
