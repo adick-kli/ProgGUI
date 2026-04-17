@@ -44,11 +44,12 @@ class PageJTAG(tk.Frame):
         # Glaubwürdiges Mousewheel-Scrolling (Windows/Mac)
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
-    def _build_ui(self):
+    def _build_ui(self, parent):
         # HEADER
-        header = tk.Frame(self, bg=BG)
+        header = tk.Frame(parent, bg=BG)
         header.pack(fill="x", padx=20, pady=(10, 0))
         tk.Label(header, text="⚡ JTAG PROGRAMMER", font=FONT_TITLE, bg=BG, fg=ACCENT).pack(side="left")
+   
         # Platz für spätere Hilfebuttons/rechts, falls gewünscht
 
         # PRODUKT-AUSWAHL
