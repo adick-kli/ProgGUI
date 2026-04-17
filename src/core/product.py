@@ -39,6 +39,11 @@ class Product:
     # Programmier-Schritte
     steps: List[ProgrammingStep]         # [Step1, Step2, ..., Step6]
     
+    adapter: str = "atmelice"           # z.B. "atmelice", "avrdragon"
+    interface: str = "jtag"             # z.B. "jtag", "swd"
+    user_writes: Optional[list] = None  # [{"address": "0x808001FC", "value": "E11EFFD7"}, ...]
+    
+
     # Tool-Konfiguration
     atprogram_path: str                  # Pfad zu atprogram.exe
     atbackend_path: str                  # Pfad zu atbackend.exe
@@ -61,5 +66,5 @@ class Product:
             ProgrammingStep(3, "User Page Write", "Schreibt Werte in User Page", True),
             ProgrammingStep(4, "Flash Write", "Schreibt Bootloader", True),
             ProgrammingStep(5, "Fuse Bits", "Setzt Fuse Bits", True),
-            ProgrammingStep(6, "Security Bit", "Setzt Security Bit", False),
+            ProgrammingStep(6, "Security Bit", "Setzt Security Bit", True),
         ]

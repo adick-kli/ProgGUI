@@ -320,6 +320,24 @@ class ProductEditDialog(tk.Toplevel):
         self._add_entry_field(main, "Fuse Bits (Hex):", "fuse_bits",
                              self.product.fuse_bits_value if self.product else "")
         
+        # Adapter (Programmer)
+        self._add_dropdown_field(main, "Adapter:", "adapter", 
+            ["atmelice", "avrdragon", "jtagicemkii"], self.product.adapter if self.product else "atmelice"
+        )
+        # Interface
+        self._add_dropdown_field(main, "Interface:", "interface",
+            ["jtag", "swd"], self.product.interface if self.product else "jtag"
+        )
+
+        self._add_entry_field(main, "UserPage Word 1 Adresse (hex):", "user_word1_addr",
+            self.product.user_writes[0]["address"] if (self.product and self.product.user_writes and len(self.product.user_writes)>0) else "")
+        self._add_entry_field(main, "UserPage Word 1 Wert (hex):", "user_word1_value",
+            self.product.user_writes[0]["value"] if (self.product and self.product.user_writes and len(self.product.user_writes)>0) else "")
+        self._add_entry_field(main, "UserPage Word 2 Adresse (hex):", "user_word2_addr",
+            self.product.user_writes[1]["address"] if (self.product and self.product.user_writes and len(self.product.user_writes)>1) else "")
+        self._add_entry_field(main, "UserPage Word 2 Wert (hex):", "user_word2_value",
+            self.product.user_writes[1]["value"] if (self.product and self.product.user_writes and len(self.product.user_writes)>1) else "")
+
         # Steps
         tk.Label(main, text="📋 Programmier-Schritte:", 
                 bg=BG, fg=ACCENT2, font=FONT_STEP).pack(anchor="w", pady=(20, 10))
@@ -457,3 +475,12 @@ class ProductEditDialog(tk.Toplevel):
             step.enabled = self.step_vars[step.number].get()
         
         return default_steps
+
+    def _add_dropdown_field(self, parent, label, key, options, value=None):
+        tk.Label(parent, text=label, bg=BG, fg=SUBTEXT, font=FONT_MAIN).pack(anchor="w", pady=(10,2))
+        var = tk.StringVar(value=value or options[0])
+        dropdown = ttk.Combobox(parent, textvariable=var, values=options, state="readonly", font=FONT_MAIN)
+        dropdown.pack(fill="x", pady=(0,4))
+        if not hasattr(self, 'fields'):
+            self.fields = {}
+        self.fields[key] = dropdown
