@@ -45,17 +45,20 @@ class PageJTAG(tk.Frame):
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def _build_ui(self, parent):
-        # HEADER
+        # Immer parent statt self!
+        # LEFT-ANBINDUNG:
+        parent.pack_propagate(False)  # Frame wächst nicht autom. nach rechts
+
+        #HEADER
         header = tk.Frame(parent, bg=BG)
-        header.pack(fill="x", padx=20, pady=(10, 0))
-        tk.Label(header, text="⚡ JTAG PROGRAMMER", font=FONT_TITLE, bg=BG, fg=ACCENT).pack(side="left")
-   
-        # Platz für spätere Hilfebuttons/rechts, falls gewünscht
+        header.pack(fill="x", padx=20, pady=(10, 0), anchor="w")  # <<<<< anchor auf w
+        tk.Label(header, text="⚡ JTAG PROGRAMMER", font=FONT_TITLE, bg=BG, fg=ACCENT).pack(side="left", anchor="w")
+        # ...
 
         # PRODUKT-AUSWAHL
-        prod_box = tk.LabelFrame(self, text="📦 PRODUKT-AUSWAHL", bg=BG2, fg=ACCENT2,
-                                 font=FONT_STEP, relief="flat", padx=16, pady=8)
-        prod_box.pack(fill="x", padx=24, pady=(14, 4))
+        prod_box = tk.LabelFrame(parent, ... )
+        prod_box.pack(fill="x", padx=24, pady=(14, 4), anchor="w")  # <<<<< anchor auf w
+
 
         select_row = tk.Frame(prod_box, bg=BG2)
         select_row.pack(fill="x")
