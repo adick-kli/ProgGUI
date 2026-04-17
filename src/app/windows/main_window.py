@@ -344,7 +344,7 @@ class MainWindow:
     def show_jtag(self):
         """Zeigt JTAG Programmer-Seite."""
         from ..pages.page_jtag import PageJTAG
-        self._switch_page(PageJTAG)
+        self._switch_page(lambda parent: PageJTAG(parent, self.product_manager))
     
     def show_bootloader(self):
         """Zeigt Bootloader Programmer-Seite."""
