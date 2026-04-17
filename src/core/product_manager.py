@@ -1,21 +1,40 @@
 ﻿import json
 import os
 from .product import Product
+from .product import Product, ProgrammingStep
 
 PRODUCTS_FILE = "data/products.json"
 
 class ProductManager:
+    def programming_step_to_dict(step):
+        return {
+            "number": step.number,
+            "name": step.name,
+            "description": step.description,
+            "enabled": step.enabled
+        }
+
+    def product_to_dict(product):
+        d = product.__dict__.copy()
+        d["steps"] = [programming_step_to_dict(s) for s in product.steps]
+        return d
+
+    def dict_to_product(d):
+        from .product import Product, ProgrammingStep
+        d = d.copy()
+        d["steps"] = [ProgrammingStep(**s) for s in d.get("steps", [])]
+        return Product(**d)
+
+    def save_all(self, products):
+        with open(PRODUCTS_FILE, "w", encoding="utf-8") as f:
+            json.dump([product_to_dict(p) for p in products], f, ensure_ascii=False, indent=2)
+
     def read_all(self):
         if not os.path.exists(PRODUCTS_FILE):
             return []
         with open(PRODUCTS_FILE, "r", encoding="utf-8") as f:
             raw = json.load(f)
-        return [Product(**item) for item in raw]
-
-    def save_all(self, products):
-        data = [p.__dict__ for p in products]
-        with open(PRODUCTS_FILE, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+        return [dict_to_product(item) for item in raw]
 
     def create(self, product):
         products = self.read_all()

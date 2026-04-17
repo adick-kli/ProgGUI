@@ -327,7 +327,7 @@ class ProductEditDialog(tk.Toplevel):
                              self.product.description if self.product else "")
         # Controller
         self._add_entry_field(main, "Controller:", "controller",
-                             self.product.controller if self.product else "AT32UC3A1512")
+                             self.product.controller if self.product else "")
         # Boot HEX
         self._add_file_field(main, "Boot HEX Datei:", "bootloader_hex",
                             self.product.bootloader_hex if self.product else "")
