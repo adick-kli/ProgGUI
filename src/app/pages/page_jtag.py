@@ -20,16 +20,17 @@ class PageJTAG(tk.Frame):
         self.scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = tk.Frame(self.canvas, bg=BG)
 
+        # Breite immer an Canvas anpassen
+        self.scroll_window = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+
         self.scrollable_frame.bind(
             "<Configure>",
             lambda e: self.canvas.configure(
                 scrollregion=self.canvas.bbox("all")
             )
         )
-        # Frame in Canvas platzieren
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.canvas.configure(yscrollcommand=self.scrollbar.set)
-
+        self.canvas.bind("<Configure>", self._on_canvas_configure)
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
 
@@ -37,28 +38,26 @@ class PageJTAG(tk.Frame):
         self._build_ui(self.scrollable_frame)
         self._load_products()
 
-        # MouseWheel-Scrolling überall im Frame:
+        # MouseWheel unterstützt überall
         self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
 
+    def _on_canvas_configure(self, event):
+        # Canvas-Inhaltsbreite immer mit Fenster mitziehen (links bündig)
+        self.canvas.itemconfig(self.scroll_window, width=event.width)
+
     def _on_mousewheel(self, event):
-        # Glaubwürdiges Mousewheel-Scrolling (Windows/Mac)
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def _build_ui(self, parent):
-        # Immer parent statt self!
-        # LEFT-ANBINDUNG:
-        parent.pack_propagate(False)  # Frame wächst nicht autom. nach rechts
-
-        #HEADER
+        # HEADER
         header = tk.Frame(parent, bg=BG)
-        header.pack(fill="x", padx=20, pady=(10, 0), anchor="w")  # <<<<< anchor auf w
+        header.pack(fill="x", padx=20, pady=(10, 0), anchor="w")
         tk.Label(header, text="⚡ JTAG PROGRAMMER", font=FONT_TITLE, bg=BG, fg=ACCENT).pack(side="left", anchor="w")
-        # ...
 
         # PRODUKT-AUSWAHL
-        prod_box = tk.LabelFrame(parent, ... )
-        prod_box.pack(fill="x", padx=24, pady=(14, 4), anchor="w")  # <<<<< anchor auf w
-
+        prod_box = tk.LabelFrame(parent, text="📦 PRODUKT-AUSWAHL", bg=BG2, fg=ACCENT2,
+                                 font=FONT_STEP, relief="flat", padx=16, pady=8)
+        prod_box.pack(fill="x", padx=24, pady=(14, 4), anchor="w")
 
         select_row = tk.Frame(prod_box, bg=BG2)
         select_row.pack(fill="x")
@@ -83,9 +82,9 @@ class PageJTAG(tk.Frame):
             self.detail_labels[label] = val
 
         # AUSFÜHRUNG
-        exec_box = tk.LabelFrame(self, text="⚙️  AUSFÜHRUNG", bg=BG2, fg=ACCENT2,
+        exec_box = tk.LabelFrame(parent, text="⚙️  AUSFÜHRUNG", bg=BG2, fg=ACCENT2,
                                 font=FONT_STEP, relief="flat", padx=16, pady=10)
-        exec_box.pack(fill="x", padx=24, pady=(10,4))
+        exec_box.pack(fill="x", padx=24, pady=(10,4), anchor="w")
 
         btn_row = tk.Frame(exec_box, bg=BG2)
         btn_row.pack(fill="x")
@@ -102,7 +101,7 @@ class PageJTAG(tk.Frame):
         # SCHRITTE – LIVE TRACKING
         steps_frame = tk.LabelFrame(exec_box, text="📋 PROGRAMMIER-SCHRITTE",
                                    font=FONT_STEP, bg=BG3, fg=ACCENT2, relief="flat", padx=12, pady=7)
-        steps_frame.pack(fill="x", pady=(10,2))
+        steps_frame.pack(fill="x", pady=(10,2), anchor="w")
         self.step_vars = []
         self.step_labels = []
         step_names = [
@@ -126,15 +125,15 @@ class PageJTAG(tk.Frame):
 
         # Fortschritt & Timer
         progress_row = tk.Frame(exec_box, bg=BG2)
-        progress_row.pack(fill="x", pady=(10,2))
+        progress_row.pack(fill="x", pady=(10,2), anchor="w")
         self.progress_label = tk.Label(progress_row, text="⏱ 00:00 / 02:30", font=FONT_MONO, bg=BG2, fg=SUBTEXT)
         self.progress_label.pack(side="left")
         self.progressbar = ttk.Progressbar(progress_row, orient="horizontal", mode="determinate", length=320)
         self.progressbar.pack(side="left", fill="x", expand=True, padx=14)
 
         # LOGS
-        log_box = tk.LabelFrame(self, text="📜 AUSGABE / LOGS", bg=BG2, fg=ACCENT2, font=FONT_STEP, relief="flat", padx=16, pady=6)
-        log_box.pack(fill="both", expand=True, padx=24, pady=(10,12))
+        log_box = tk.LabelFrame(parent, text="📜 AUSGABE / LOGS", bg=BG2, fg=ACCENT2, font=FONT_STEP, relief="flat", padx=16, pady=6)
+        log_box.pack(fill="both", expand=True, padx=24, pady=(10,12), anchor="w")
         self.log = scrolledtext.ScrolledText(
             log_box, bg="#11111b", fg=TEXT, font=FONT_MONO, relief="flat", state="disabled", wrap="none", height=9
         )
@@ -169,7 +168,7 @@ class PageJTAG(tk.Frame):
 
     def _manage_products(self):
         # Hier Bindung an show_products deiner MainWindow
-        # Beispiel: self.master.master.show_products() falls richtiges Parent-Layout
+        # Beispiel: self.master.master.show_products() falls Parent-Layout so ist
         pass
 
     def _clear_log(self):
