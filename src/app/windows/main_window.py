@@ -92,6 +92,12 @@ class MainWindow:
             IconManager.apply_icon_to_window(self.root)
         except:
             pass
+        
+        # ═════════════════════════════════════════════════════
+        # LADE HOME-SEITE BEIM START ✅ NEU!
+        # ═════════════════════════════════════════════════════
+        
+        self.root.after(50, self.show_home)
     
     # ═══════════════════════════════════════════════════════════
     # MENÜBAR
@@ -321,6 +327,14 @@ class MainWindow:
         """Zeigt Settings-Seite."""
         from ..pages.page_settings import PageSettings
         self._switch_page(PageSettings)
+
+    def show_devices(self):
+        """Zeigt Devices-Seite."""
+        try:
+            from ..pages.page_devices import PageDevices
+            self._switch_page(PageDevices)
+        except ImportError:
+            print("[WARNING] page_devices.py existiert noch nicht")
     
     def show_products(self):  # ✅ NEU: Products Seite
         """Zeigt Products-Seite."""
@@ -466,21 +480,4 @@ class MainWindow:
         # Beende App
         self.root.destroy()
 
-    def show_settings(self):
-        """Zeigt Settings-Seite."""
-        from ..pages.page_settings import PageSettings
-        self._switch_page(PageSettings)
     
-    # ✅ NEU: show_devices Methode
-    def show_devices(self):
-        """Zeigt Devices-Seite."""
-        try:
-            from ..pages.page_devices import PageDevices
-            self._switch_page(PageDevices)
-        except ImportError:
-            print("[WARNING] page_devices.py existiert noch nicht")
-    
-    def show_products(self):
-        """Zeigt Products-Seite."""
-        from ..pages.page_products import PageProducts
-        self._switch_page(lambda parent: PageProducts(parent, self.product_manager))
