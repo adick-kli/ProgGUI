@@ -1,11 +1,1 @@
-[
-  {
-    "id": null,
-    "name": "c",
-    "description": "c",
-    "controller": "c",
-    "bootloader_hex": "D:/ALVIDI/AL-AUFTRAG/GWK_GmbH/_3_SOFTWARE/SOURCE_CODE/QUANTEC/OLD FILES/software/UC3B0256/QT_HAND_BOOT/PROGRAM/QT_HAND_BOOT_EST01.hex",
-    "userpage_hex": "D:/ALVIDI/AL-AUFTRAG/GWK_GmbH/_3_SOFTWARE/SOURCE_CODE/QUANTEC/OLD FILES/software/UC3B0256/QT_HAND_BOOT/PROGRAM/USER_PAGE_HWZ.hex",
-    "fuse_bits_value": "345",
-    "steps": [
-      
+[]

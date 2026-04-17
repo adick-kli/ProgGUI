@@ -1,30 +1,37 @@
 ﻿import json
 import os
-from .product import Product
 from .product import Product, ProgrammingStep
+from datetime import datetime
 
 PRODUCTS_FILE = "data/products.json"
 
+# === Hilfsfunktionen für JSON-Konvertierung, AUßERHALB der Klasse! ===
+def programming_step_to_dict(step):
+    return {
+        "number": step.number,
+        "name": step.name,
+        "description": step.description,
+        "enabled": step.enabled
+    }
+
+def dict_to_product(d):
+    d = d.copy()
+    d["steps"] = [ProgrammingStep(**s) for s in d.get("steps", [])]
+    # Zeitfelder als datetime zurückwandeln
+    if d.get("created_at"):
+        d["created_at"] = datetime.fromisoformat(d["created_at"])
+    if d.get("updated_at"):
+        d["updated_at"] = datetime.fromisoformat(d["updated_at"])
+    if d.get("last_programmed"):
+        d["last_programmed"] = datetime.fromisoformat(d["last_programmed"]) if d["last_programmed"] else None
+    return Product(**d)
+
+def dict_to_product(d):
+    d = d.copy()
+    d["steps"] = [ProgrammingStep(**s) for s in d.get("steps", [])]
+    return Product(**d)
+
 class ProductManager:
-    def programming_step_to_dict(step):
-        return {
-            "number": step.number,
-            "name": step.name,
-            "description": step.description,
-            "enabled": step.enabled
-        }
-
-    def product_to_dict(product):
-        d = product.__dict__.copy()
-        d["steps"] = [programming_step_to_dict(s) for s in product.steps]
-        return d
-
-    def dict_to_product(d):
-        from .product import Product, ProgrammingStep
-        d = d.copy()
-        d["steps"] = [ProgrammingStep(**s) for s in d.get("steps", [])]
-        return Product(**d)
-
     def save_all(self, products):
         with open(PRODUCTS_FILE, "w", encoding="utf-8") as f:
             json.dump([product_to_dict(p) for p in products], f, ensure_ascii=False, indent=2)
