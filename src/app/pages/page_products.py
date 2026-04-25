@@ -374,6 +374,20 @@ class ProductEditDialog(tk.Toplevel):
                 font=FONT_MAIN
             ).pack(anchor="w", pady=2)
         
+        # Tools / Datei-Pfade
+        self._add_file_field(
+            main, "Pfad zu atprogram.exe:", "atprogram_path",
+            self.product.atprogram_path if self.product else ""
+        )
+        self._add_file_field(
+            main, "Pfad zu atbackend.exe:", "atbackend_path",
+            self.product.atbackend_path if self.product else ""
+        )
+        self._add_file_field(
+            main, "Pfad zu objcopy.exe:", "objcopy_path",
+            self.product.objcopy_path if self.product else ""
+        )
+
         # Buttons
         btn_frame = tk.Frame(main, bg=BG)
         btn_frame.pack(fill="x", pady=(20, 0))
@@ -457,9 +471,9 @@ class ProductEditDialog(tk.Toplevel):
                     userpage_hex=self.fields["userpage_hex"].get(),
                     fuse_bits_value=self.fields["fuse_bits_value"].get() if self.fields.get("fuse_bits_value") else "",
                     steps=self._get_steps(),
-                    atprogram_path="",   # Noch zu pflegen falls gewünscht
-                    atbackend_path="",
-                    objcopy_path="",
+                    atprogram_path=self.fields["atprogram_path"].get(),
+                    atbackend_path=self.fields["atbackend_path"].get(),
+                    objcopy_path=self.fields["objcopy_path"].get(),
                     adapter=self.fields["adapter"].get(),
                     interface=self.fields["interface"].get(),
                     user_writes=user_writes,
@@ -480,6 +494,10 @@ class ProductEditDialog(tk.Toplevel):
                 self.product.adapter = self.fields["adapter"].get()
                 self.product.interface = self.fields["interface"].get()
                 self.product.user_writes = user_writes
+                # NEU - Die 3 Pfadfelder VOR dem Speichern setzen:
+                self.product.atprogram_path = self.fields["atprogram_path"].get()
+                self.product.atbackend_path = self.fields["atbackend_path"].get()
+                self.product.objcopy_path = self.fields["objcopy_path"].get()
                 self.product.updated_at = datetime.now()
                 self.product_manager.update(self.product)
                 messagebox.showinfo("Erfolg", f"Produkt '{name}' aktualisiert!")

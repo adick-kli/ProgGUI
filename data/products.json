@@ -1,1 +1,58 @@
-[]
+[
+  {
+    "id": null,
+    "name": "Quantec Mainboard",
+    "description": "Bootloader-Programmierung AT32UC3A1512, QUANTEC_XMODEM_BOOTLOADER_V1_004",
+    "controller": "at32uc3a1512",
+    "bootloader_hex": "D:/ALVIDI/AL-AUFTRAG/GWK_GmbH/_3_SOFTWARE/SOURCE_CODE/QUANTEC/OLD FILES/software/UC3A1512/PROGRAM_QUANTEC_BOOTLOADER/QUANTEC_XMODEM_BOOTLOADER_V1_004.hex",
+    "userpage_hex": "",
+    "fuse_bits_value": "F675FFFF",
+    "steps": [
+      {
+        "number": 1,
+        "name": "Chip Erase",
+        "description": "Löscht den kompletten Flash",
+        "enabled": true
+      },
+      {
+        "number": 2,
+        "name": "User Page Erase",
+        "description": "Löscht die User Page",
+        "enabled": true
+      },
+      {
+        "number": 3,
+        "name": "User Page Write",
+        "description": "Schreibt Werte in User Page",
+        "enabled": true
+      },
+      {
+        "number": 4,
+        "name": "Flash Write",
+        "description": "Schreibt Bootloader",
+        "enabled": true
+      },
+      {
+        "number": 5,
+        "name": "Fuse Bits",
+        "description": "Setzt Fuse Bits",
+        "enabled": true
+      },
+      {
+        "number": 6,
+        "name": "Security Bit",
+        "description": "Setzt Security Bit",
+        "enabled": true
+      }
+    ],
+    "atprogram_path": "",
+    "atbackend_path": "",
+    "objcopy_path": "",
+    "created_at": "2026-04-17T12:01:35.475036",
+    "updated_at": "2026-04-25T11:45:46.652494",
+    "last_programmed": null,
+    "adapter": "atmelice",
+    "interface": "jtag",
+    "user_writes": []
+  }
+]

@@ -14,21 +14,22 @@ def programming_step_to_dict(step):
         "enabled": step.enabled
     }
 
-def dict_to_product(d):
-    d = d.copy()
-    d["steps"] = [ProgrammingStep(**s) for s in d.get("steps", [])]
-    # Zeitfelder als datetime zurückwandeln
-    if d.get("created_at"):
-        d["created_at"] = datetime.fromisoformat(d["created_at"])
-    if d.get("updated_at"):
-        d["updated_at"] = datetime.fromisoformat(d["updated_at"])
-    if d.get("last_programmed"):
-        d["last_programmed"] = datetime.fromisoformat(d["last_programmed"]) if d["last_programmed"] else None
-    return Product(**d)
+def product_to_dict(product):
+    d = product.__dict__.copy()
+    d["steps"] = [programming_step_to_dict(s) for s in product.steps]
+    # Zeitfelder als ISO-String kodieren!
+    for time_key in ["created_at", "updated_at", "last_programmed"]:
+        if d.get(time_key):
+            d[time_key] = d[time_key].isoformat() if d[time_key] else None
+    return d
 
 def dict_to_product(d):
     d = d.copy()
     d["steps"] = [ProgrammingStep(**s) for s in d.get("steps", [])]
+    # Zeitfelder als datetime zurückwandeln
+    for time_key in ["created_at", "updated_at", "last_programmed"]:
+        if d.get(time_key):
+            d[time_key] = datetime.fromisoformat(d[time_key]) if d[time_key] else None
     return Product(**d)
 
 class ProductManager:
