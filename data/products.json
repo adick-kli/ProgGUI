@@ -45,14 +45,14 @@
         "enabled": true
       }
     ],
-    "atprogram_path": "",
-    "atbackend_path": "",
-    "objcopy_path": "",
+    "atprogram_path": "D:/ALVIDI/AL-VBA/PYTHON/external_tools/bin/atprogram.exe",
+    "atbackend_path": "D:/ALVIDI/AL-VBA/PYTHON/external_tools/bin/atbackend.exe",
+    "objcopy_path": "D:/ALVIDI/AL-VBA/PYTHON/external_tools/bin/avr32-objcopy.exe",
     "created_at": "2026-04-17T12:01:35.475036",
-    "updated_at": "2026-04-25T11:45:46.652494",
+    "updated_at": "2026-04-25T12:26:19.144064",
     "last_programmed": null,
-    "adapter": "atmelice",
-    "interface": "jtag",
+    "adapter": "",
+    "interface": "",
     "user_writes": []
   }
 ]
