@@ -377,15 +377,18 @@ class ProductEditDialog(tk.Toplevel):
         # Tools / Datei-Pfade
         self._add_file_field(
             main, "Pfad zu atprogram.exe:", "atprogram_path",
-            self.product.atprogram_path if self.product else ""
+            self.product.atprogram_path if self.product else "",
+            filetypes=[("Programmdateien", "*.exe"), ("Alle", "*.*")]
         )
         self._add_file_field(
             main, "Pfad zu atbackend.exe:", "atbackend_path",
-            self.product.atbackend_path if self.product else ""
+            self.product.atbackend_path if self.product else "",
+            filetypes=[("Programmdateien", "*.exe"), ("Alle", "*.*")]
         )
         self._add_file_field(
             main, "Pfad zu objcopy.exe:", "objcopy_path",
-            self.product.objcopy_path if self.product else ""
+            self.product.objcopy_path if self.product else "",
+            filetypes=[("Programmdateien", "*.exe"), ("Alle", "*.*")]
         )
 
         # Buttons
@@ -413,18 +416,18 @@ class ProductEditDialog(tk.Toplevel):
         entry.pack(fill="x", ipady=5)
         self.fields[key] = entry
     
-    def _add_file_field(self, parent, label: str, key: str, value: str = ""):
+    def _add_file_field(self, parent, label, key, value="", filetypes=None):
         tk.Label(parent, text=label, bg=BG, fg=SUBTEXT,
-                font=FONT_MAIN).pack(anchor="w", pady=(10, 2))
+                 font=FONT_MAIN).pack(anchor="w", pady=(10, 2))
         row = tk.Frame(parent, bg=BG)
         row.pack(fill="x", ipady=5)
         entry = tk.Entry(row, bg=BG3, fg=TEXT, insertbackground=TEXT,
-                        relief="flat", font=FONT_MONO)
+                         relief="flat", font=FONT_MONO)
         entry.insert(0, value)
         entry.pack(side="left", fill="x", expand=True, padx=(0, 8))
         tk.Button(
             row, text="Browse...",
-            command=lambda: self._browse_file(entry),
+            command=lambda: self._browse_file(entry, filetypes),
             bg=BG3, fg=ACCENT, relief="flat",
             font=FONT_MAIN, cursor="hand2", padx=10
         ).pack(side="right")
@@ -437,9 +440,11 @@ class ProductEditDialog(tk.Toplevel):
         dropdown.pack(fill="x", pady=(0,4))
         self.fields[key] = dropdown
 
-    def _browse_file(self, entry: tk.Entry):
+    def _browse_file(self, entry: tk.Entry, filetypes=None):
+        if filetypes is None:
+            filetypes = [("Alle Dateien", "*.*")]
         path = filedialog.askopenfilename(
-            filetypes=[("HEX Dateien", "*.hex"), ("Alle", "*.*")]
+            filetypes=filetypes
         )
         if path:
             entry.delete(0, tk.END)

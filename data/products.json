@@ -54,5 +54,70 @@
     "adapter": "",
     "interface": "",
     "user_writes": []
+  },
+  {
+    "id": null,
+    "name": "EST01 Duo",
+    "description": "Bootloader-Programmierung AT32UC3B1256, QT_HAND_BOOT_EST01 + USER_PAGE_HWZ",
+    "controller": "at32uc3b1256",
+    "bootloader_hex": "D:/ALVIDI/AL-XTEST/HEX_FILES/GWK/EST01_DUO/QT_HAND_BOOT.hex",
+    "userpage_hex": "D:/ALVIDI/AL-XTEST/HEX_FILES/GWK/EST01_DUO/USER_PAGE_HWZ.hex",
+    "fuse_bits_value": "F675FFFF",
+    "steps": [
+      {
+        "number": 1,
+        "name": "Chip Erase",
+        "description": "Löscht den kompletten Flash",
+        "enabled": true
+      },
+      {
+        "number": 2,
+        "name": "User Page Erase",
+        "description": "Löscht die User Page",
+        "enabled": true
+      },
+      {
+        "number": 3,
+        "name": "User Page Write",
+        "description": "Schreibt Werte in User Page",
+        "enabled": true
+      },
+      {
+        "number": 4,
+        "name": "Flash Write",
+        "description": "Schreibt Bootloader",
+        "enabled": true
+      },
+      {
+        "number": 5,
+        "name": "Fuse Bits",
+        "description": "Setzt Fuse Bits",
+        "enabled": true
+      },
+      {
+        "number": 6,
+        "name": "Security Bit",
+        "description": "Setzt Security Bit",
+        "enabled": true
+      }
+    ],
+    "atprogram_path": "D:/ALVIDI/AL-VBA/PYTHON/external_tools/bin/atprogram.exe",
+    "atbackend_path": "D:/ALVIDI/AL-VBA/PYTHON/external_tools/bin/atbackend.exe",
+    "objcopy_path": "D:/ALVIDI/AL-VBA/PYTHON/external_tools/bin/avr32-objcopy.exe",
+    "created_at": "2026-04-25T12:55:39.865663",
+    "updated_at": "2026-04-25T12:55:39.865667",
+    "last_programmed": null,
+    "adapter": "atmelice",
+    "interface": "jtag",
+    "user_writes": [
+      {
+        "address": "808001FC",
+        "value": "E11EFFD7"
+      },
+      {
+        "address": "808001F8",
+        "value": "929E1523"
+      }
+    ]
   }
 ]
